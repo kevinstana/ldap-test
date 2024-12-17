@@ -42,7 +42,8 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                 String username = claims.getSubject();
 
                 UserDetailsImpl userDetails = appUserDetailsServiceImpl.loadUserByUsername(username);
-                CustomUserDetails customDetails = new CustomUserDetails(userDetails.getUsername(), "", new ArrayList<>(),
+                CustomUserDetails customDetails = new CustomUserDetails(userDetails.getUsername(), "",
+                        new ArrayList<>(),
                         userDetails.getEmail(), userDetails.getTitle(), userDetails.getFirstName(),
                         userDetails.getLastName());
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(

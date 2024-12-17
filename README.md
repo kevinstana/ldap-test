@@ -12,5 +12,5 @@ curl -X POST http://localhost:8080/api/login -H "Content-Type: application/json"
 
 Check home page message:
 ```bash
-curl -X POST http://localhost:8080/api -H "Authorization: Bearer <accessToken>"
+curl http://localhost:8080/api/ -H "Authorization: Bearer <accessToken>"
 ```
