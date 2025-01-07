@@ -79,7 +79,6 @@ public class SecurityConfig {
     public LdapContextSource ldapContextSource() {
         LdapContextSource ldapContextSource = new LdapContextSource();
         ldapContextSource.setUrl(ldapUrl);
-        ldapContextSource.setAnonymousReadOnly(true);
         ldapContextSource.setAuthenticationStrategy(new DefaultTlsDirContextAuthenticationStrategy());
 
         return ldapContextSource;
@@ -93,7 +92,6 @@ public class SecurityConfig {
 
         factory.setUserDnPatterns(userDnPattern);
         factory.setUserSearchFilter(userSearchFilter);
-        factory.setUserSearchBase("ou=People,dc=hua,dc=gr");
         factory.setUserDetailsContextMapper(new LdapUserDetailsContextMapper());
 
         return factory.createAuthenticationManager();
