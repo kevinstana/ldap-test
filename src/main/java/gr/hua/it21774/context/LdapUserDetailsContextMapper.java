@@ -3,7 +3,7 @@ package gr.hua.it21774.context;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.ldap.userdetails.UserDetailsContextMapper;
 
-import gr.hua.it21774.entities.ERole;
+import gr.hua.it21774.enums.ERole;
 import gr.hua.it21774.exceptions.RoleMappingException;
 import gr.hua.it21774.userdetails.AppUserDetails;
 

@@ -2,7 +2,7 @@ package gr.hua.it21774.entities;
 
 import org.hibernate.annotations.ColumnTransformer;
 
-import gr.hua.it21774.enums.ERole;
+import gr.hua.it21774.enums.EThesisStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -13,17 +13,17 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "roles")
-public class Role {
+@Table(name = "thesis_status")
+public class ThesisStatus {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    @ColumnTransformer(read = "role::text", write = "?::role_type")
+    @ColumnTransformer(read = "status::text", write = "?::thesis_status_type")
     @Column(nullable = false, unique = true)
-    private ERole role;
+    private EThesisStatus status;
 
     public Long getId() {
         return id;
@@ -33,11 +33,11 @@ public class Role {
         this.id = id;
     }
 
-    public ERole getRole() {
-        return role;
+    public EThesisStatus getStatus() {
+        return status;
     }
 
-    public void setRole(ERole role) {
-        this.role = role;
+    public void setStatus(EThesisStatus status) {
+        this.status = status;
     }
 }
