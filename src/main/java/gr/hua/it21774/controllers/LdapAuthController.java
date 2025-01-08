@@ -19,7 +19,7 @@ import gr.hua.it21774.dto.EnabledUserDTO;
 import gr.hua.it21774.entities.User;
 import gr.hua.it21774.helpers.AuthDetails;
 import gr.hua.it21774.requests.LoginRequest;
-import gr.hua.it21774.responses.ErrorRespone;
+import gr.hua.it21774.responses.MessageRespone;
 import gr.hua.it21774.responses.AuthResponse;
 import gr.hua.it21774.respository.RoleRepository;
 import gr.hua.it21774.respository.UserRepository;
@@ -68,7 +68,7 @@ public class LdapAuthController {
                         userRepository.save(newUser);
                         user.setId(newUser.getId());
                 } else if (!user.getIsEnabled()) {
-                        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorRespone(
+                        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageRespone(
                                         "Account deactivated. Please contact your system administrator."));
                 }
 

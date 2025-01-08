@@ -12,7 +12,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import gr.hua.it21774.responses.ErrorRespone;
+import gr.hua.it21774.responses.MessageRespone;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -47,12 +47,12 @@ public class GlobalExceptionHandler {
                 break;
         }
 
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorRespone(errorMessage));
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageRespone(errorMessage));
     }
 
     @ExceptionHandler(RoleMappingException.class)
     public ResponseEntity<Object> handleRoleMappingException(RoleMappingException e) {
 
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorRespone(e.getMessage()));
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageRespone(e.getMessage()));
     }
 }

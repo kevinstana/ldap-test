@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import gr.hua.it21774.helpers.AuthDetails;
 import gr.hua.it21774.requests.RefreshTokenRequest;
 import gr.hua.it21774.responses.AuthResponse;
-import gr.hua.it21774.responses.ErrorRespone;
+import gr.hua.it21774.responses.MessageRespone;
 import gr.hua.it21774.service.JwtService;
 import io.jsonwebtoken.Claims;
 import jakarta.validation.Valid;
@@ -48,7 +48,7 @@ public class RefreshTokenController {
             }
         }
 
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorRespone("Unauthorized"));
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageRespone("Unauthorized"));
     }
 
 }

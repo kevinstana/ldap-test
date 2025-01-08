@@ -2,6 +2,8 @@ package gr.hua.it21774.config;
 
 import java.util.Arrays;
 
+import org.springframework.ldap.pool.factory.*;
+
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -62,6 +64,8 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/login/**", "/login-external/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/users").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/users/{id}/password-change").hasAuthority("EXTERNAL")
                         .requestMatchers("/actuator/health/**").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -85,7 +89,7 @@ public class SecurityConfig {
     @Qualifier(value = "ldap-auth")
     AuthenticationManager ldapAuthenticationManager(LdapContextSource ldapContextSource) {
         LdapBindAuthenticationManagerFactory factory = new LdapBindAuthenticationManagerFactory(
-            ldapContextSource);
+                ldapContextSource);
 
         factory.setUserDnPatterns(userDnPattern);
         factory.setUserSearchFilter(userSearchFilter);
