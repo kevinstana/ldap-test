@@ -64,8 +64,9 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/login/**", "/login-external/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/users").hasAuthority("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/users/{id}/password-change").hasAuthority("EXTERNAL")
+                        .requestMatchers(HttpMethod.POST, "/external-users").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/external-users/{id}/password-change").hasAuthority("EXTERNAL")
+                        .requestMatchers(HttpMethod.POST, "/theses").hasAuthority("PROFESSOR")
                         .requestMatchers("/actuator/health/**").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

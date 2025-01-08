@@ -47,7 +47,7 @@ create table if not exists external_users (
 CREATE TABLE IF NOT EXISTS theses (
     id bigserial primary key,
     title VARCHAR(255) unique not null,
-    description text,
+    description text not null,
     created_by bigint not null,
     created_at timestamp not null,
     last_modified timestamp,

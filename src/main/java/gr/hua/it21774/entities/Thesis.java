@@ -4,7 +4,6 @@ import java.time.Instant;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "theses", uniqueConstraints = {
@@ -22,6 +21,9 @@ public class Thesis {
 
     @NotBlank
     private String description;
+
+    @Column(name = "created_by")
+    private Long createdBy;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
@@ -48,16 +50,15 @@ public class Thesis {
     private Long statusId;
 
     @Column(name = "professor_grade")
-    private double professorGrade;
+    private Double professorGrade;
 
     @Column(name = "second_reviewer_grade")
-    private double secondReviewerGrade;
+    private Double secondReviewerGrade;
 
     @Column(name = "third_reviewer_grade")
-    private double thirdReviewerGrade;
+    private Double thirdReviewerGrade;
 
-    @NotNull
-    private int views;
+    private Integer views;
 
     @Column(name = "doc_link")
     private String docLink;
@@ -65,12 +66,13 @@ public class Thesis {
     public Thesis() {
     }
 
-    public Thesis(String title, String description, Instant createdAt, Instant lastModified,
+    public Thesis(String title, String description, Long createdBy, Instant createdAt, Instant lastModified,
             Long lastModifiedBy, Long professorId, Long studentId, Long secondReviewerId,
-            Long thirdReviewerId, Long statusId, double professorGrade, double secondReviewerGrade,
-            double thirdReviewerGrade, int views, String docLink) {
+            Long thirdReviewerId, Long statusId, Double professorGrade, Double secondReviewerGrade,
+            Double thirdReviewerGrade, Integer views, String docLink) {
         this.title = title;
         this.description = description;
+        this.createdBy = createdBy;
         this.createdAt = createdAt;
         this.lastModified = lastModified;
         this.lastModifiedBy = lastModifiedBy;
@@ -108,6 +110,14 @@ public class Thesis {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Long getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(Long createdBy) {
+        this.createdBy = createdBy;
     }
 
     public Instant getCreatedAt() {
@@ -174,35 +184,35 @@ public class Thesis {
         this.statusId = statusId;
     }
 
-    public double getProfessorGrade() {
+    public Double getProfessorGrade() {
         return professorGrade;
     }
 
-    public void setProfessorGrade(double professorGrade) {
+    public void setProfessorGrade(Double professorGrade) {
         this.professorGrade = professorGrade;
     }
 
-    public double getSecondReviewerGrade() {
+    public Double getSecondReviewerGrade() {
         return secondReviewerGrade;
     }
 
-    public void setSecondReviewerGrade(double secondReviewerGrade) {
+    public void setSecondReviewerGrade(Double secondReviewerGrade) {
         this.secondReviewerGrade = secondReviewerGrade;
     }
 
-    public double getThirdReviewerGrade() {
+    public Double getThirdReviewerGrade() {
         return thirdReviewerGrade;
     }
 
-    public void setThirdReviewerGrade(double thirdReviewerGrade) {
+    public void setThirdReviewerGrade(Double thirdReviewerGrade) {
         this.thirdReviewerGrade = thirdReviewerGrade;
     }
 
-    public int getViews() {
+    public Integer getViews() {
         return views;
     }
 
-    public void setViews(int views) {
+    public void setViews(Integer views) {
         this.views = views;
     }
 

@@ -57,4 +57,14 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageRespone(e.getMessage()));
     }
+
+    @ExceptionHandler(AccountDisabledException.class)
+    public ResponseEntity<Object> handleAccountDisabledException(AccountDisabledException e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageRespone(e.getMessage()));
+    }
+
+    @ExceptionHandler(TitleNotFoundException.class)
+    public ResponseEntity<Object> handleTitleNotFoundException(TitleNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageRespone(e.getMessage()));
+    }
 }

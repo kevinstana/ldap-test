@@ -21,27 +21,32 @@ import gr.hua.it21774.responses.MessageRespone;
 import gr.hua.it21774.respository.ExternalUserRepository;
 import gr.hua.it21774.respository.RoleRepository;
 import gr.hua.it21774.respository.UserRepository;
+import gr.hua.it21774.service.ExternalUserDetailsService;
+import gr.hua.it21774.service.ExternalUserService;
 import io.jsonwebtoken.Claims;
 import jakarta.validation.Valid;
 
 @RestController
-public class UserController {
+public class ExternalUserController {
 
     private final UserRepository userRepository;
     private final ExternalUserRepository externalUserRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ExternalUserService externalUserService;
 
-    public UserController(UserRepository userRepository, ExternalUserRepository externalUserRepository,
+    public ExternalUserController(UserRepository userRepository, ExternalUserRepository externalUserRepository,
             RoleRepository roleRepository,
-            PasswordEncoder passwordEncoder) {
+            PasswordEncoder passwordEncoder,
+            ExternalUserService externalUserService) {
         this.userRepository = userRepository;
         this.externalUserRepository = externalUserRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
+        this.externalUserService = externalUserService;
     }
 
-    @PostMapping("/users")
+    @PostMapping("/external-users")
     public ResponseEntity<?> createExternalUser(@Valid @RequestBody CreateExternalUserRequest request) {
 
         if (!request.getPassword().equals(request.getVerifyPassword())) {
@@ -49,14 +54,12 @@ public class UserController {
         }
 
         ERole role;
-
         try {
             role = ERole.valueOf(request.getRole().toUpperCase());
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new MessageRespone("Role not found: " + request.getRole()));
         }
-
         Long roleId = roleRepository.findIdByRole(role).get();
 
         if (externalUserRepository.existsByUsername(request.getUsername())) {
@@ -67,16 +70,12 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(new MessageRespone("Email already in use"));
         }
 
-        externalUserRepository
-                .save(new ExternalUser(0L, request.getUsername(), passwordEncoder.encode(request.getPassword())));
-
-        userRepository.save(new User(0L, request.getUsername(), request.getEmail(), request.getFirstnName(),
-                request.getLastName(), Instant.now(), null, null, true, roleId));
+        externalUserService.createExternalUser(request, passwordEncoder.encode(request.getPassword()), roleId);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(new MessageRespone("User created successfully!"));
     }
 
-    @PostMapping("/users/{id}/password-change")
+    @PostMapping("/external-users/{id}/password-change")
     public ResponseEntity<?> changeExternalUserPassword(@Valid @RequestBody ChangePasswordRequest request,
             @PathVariable Long id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -85,7 +84,7 @@ public class UserController {
         Long authId = Long.valueOf(accessTokenClaims.getSubject());
 
         if (!authId.equals(id)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
         if (!request.getNewPassword().equals(request.getVerifyNewPassword())) {
@@ -97,7 +96,7 @@ public class UserController {
                 .findPasswordByUsername(username).orElse("");
 
         if (!passwordEncoder.matches(request.getCurrentPassword(), currentPassword)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageRespone("Invalid current password"));
         }
 
         externalUserRepository.updatePasswordByUsername(username, passwordEncoder.encode(request.getNewPassword()));
