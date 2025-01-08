@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import gr.hua.it21774.entities.ERole;
+import gr.hua.it21774.enums.ERole;
 import gr.hua.it21774.service.JwtService;
 import gr.hua.it21774.userdetails.AppUserDetails;
 import io.jsonwebtoken.Claims;

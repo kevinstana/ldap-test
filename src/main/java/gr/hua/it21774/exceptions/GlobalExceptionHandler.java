@@ -37,6 +37,8 @@ public class GlobalExceptionHandler {
         String errorMessage = "";
         switch (e.getMessage()) {
             case "[LDAP: error code 32 - No Such Object]":
+            case "No value present":
+            case "Bad credentials":
                 errorMessage = "Invalid credentials";
                 break;
             case "[LDAP: error code 13 - TLS confidentiality required]":

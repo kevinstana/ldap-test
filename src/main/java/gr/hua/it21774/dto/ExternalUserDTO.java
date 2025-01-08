@@ -1,6 +1,6 @@
 package gr.hua.it21774.dto;
 
-import gr.hua.it21774.entities.ERole;
+import gr.hua.it21774.enums.ERole;
 
 public class ExternalUserDTO {
     private Long id;

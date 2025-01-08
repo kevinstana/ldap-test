@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import gr.hua.it21774.entities.ERole;
 import gr.hua.it21774.entities.ExternalUser;
 import gr.hua.it21774.entities.User;
+import gr.hua.it21774.enums.ERole;
 import gr.hua.it21774.requests.ChangePasswordRequest;
 import gr.hua.it21774.requests.CreateExternalUserRequest;
 import gr.hua.it21774.responses.MessageRespone;

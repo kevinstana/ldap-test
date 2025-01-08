@@ -4,7 +4,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import gr.hua.it21774.entities.ERole;
+import gr.hua.it21774.enums.ERole;
 
 import java.util.Collection;
 import java.util.List;
