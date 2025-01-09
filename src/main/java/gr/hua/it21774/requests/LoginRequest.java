@@ -8,7 +8,7 @@ public class LoginRequest {
 
     @NotBlank(message = "Username required")
     @Pattern(regexp = "^\\S*$", message = "Username cannot have whitespace")
-    @Size(max = 50, message = "Username cannot be more than 50 characters long")
+    @Size(max = 256, message = "Username cannot be more than 256 characters long")
     private String username;
 
     @NotBlank(message = "Password required")

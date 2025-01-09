@@ -36,8 +36,11 @@ public class ThesisService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Long createdBy = ((AppUserDetails) authentication.getPrincipal()).getId();
 
+        Long secondReviewerId = Long.valueOf(request.getSecondReviewerId());
+        Long thirdReviewerId = Long.valueOf(request.getThirdReviewerId());
+
         Set<Long> reviewerIds = new HashSet<Long>(
-                Arrays.asList(request.getSecondReviewerId(), request.getThirdReviewerId()));
+                Arrays.asList(secondReviewerId, thirdReviewerId));
         if (reviewerIds.contains(createdBy)) {
             throw new InvalidAttributeException("You can't assing yourself as an extra reviewer.");
         }
@@ -45,13 +48,13 @@ public class ThesisService {
         if (thesisRepository.existsByTitle(request.getTitle())) {
             throw new EntityExistsException("A thesis with this title already exists.");
         }
-        validateReviewerPair(request.getSecondReviewerId(), request.getThirdReviewerId());
+        validateReviewerPair(secondReviewerId, thirdReviewerId);
 
         if (request.getDescription().isBlank()) {
             request.setDescription("Pending description");
         }
         Thesis thesis = new Thesis(request.getTitle(), request.getDescription(), createdBy, Instant.now(), null, null,
-                createdBy, null, request.getSecondReviewerId(), request.getThirdReviewerId(), 1L, null, null, null,
+                createdBy, null, secondReviewerId, thirdReviewerId, 1L, null, null, null,
                 null, null);
 
         thesisRepository.save(thesis);
@@ -82,7 +85,7 @@ public class ThesisService {
         } else {
             map.forEach((id, errorMessage) -> {
                 if (!userRepository.hasRole(id, ERole.PROFESSOR)) {
-                    throw new InvalidAttributeException(map.get(id == secondReviewerId ? id : thirdReviewerId));
+                    throw new InvalidAttributeException(map.get(id == secondReviewerId ?thirdReviewerId : secondReviewerId));
                 }
             });
         }
