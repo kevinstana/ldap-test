@@ -1,5 +1,6 @@
 package gr.hua.it21774.requests;
 
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 
 public class CreateThesisRequest {
@@ -8,7 +9,11 @@ public class CreateThesisRequest {
     private String title;
 
     private String description;
+
+    @Min(value = 1, message = "Id must be bigger than 0")
     private Long secondReviewerId;
+
+    @Min(value = 1, message = "Id must be bigger than 0")
     private Long thirdReviewerId;
 
     public CreateThesisRequest(String title, String description, Long secondReviewerId, Long thirdReviewerId) {

@@ -8,4 +8,5 @@ import gr.hua.it21774.entities.Thesis;
 @Repository
 public interface ThesisRepository extends JpaRepository<Thesis, Long> {
 
+    Boolean existsByTitle(String title);
 }
