@@ -1,7 +1,6 @@
 package gr.hua.it21774.controllers;
 
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -13,10 +12,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import gr.hua.it21774.exceptions.AccountDisabledException;
 import gr.hua.it21774.helpers.AuthDetails;
 import gr.hua.it21774.requests.LoginRequest;
 import gr.hua.it21774.responses.AuthResponse;
-import gr.hua.it21774.responses.MessageRespone;
 import gr.hua.it21774.service.JwtService;
 import gr.hua.it21774.userdetails.AppUserDetails;
 import jakarta.validation.Valid;
@@ -46,8 +45,7 @@ public class ExternalAuthController {
 
                 AppUserDetails userDetails = (AppUserDetails) authentication.getPrincipal();
                 if (!userDetails.getIsEnabled()) {
-                        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageRespone(
-                                        "Account deactivated. Please contact your system administrator."));
+                        throw new AccountDisabledException();
                 }
 
                 AuthDetails authDetails = new AuthDetails(authentication, userDetails.getId(), true);

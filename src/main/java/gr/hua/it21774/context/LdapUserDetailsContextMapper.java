@@ -5,7 +5,6 @@ import org.springframework.security.ldap.userdetails.UserDetailsContextMapper;
 
 import gr.hua.it21774.enums.ERole;
 import gr.hua.it21774.exceptions.RoleMappingException;
-import gr.hua.it21774.exceptions.TitleNotFoundException;
 import gr.hua.it21774.userdetails.AppUserDetails;
 
 import org.springframework.ldap.core.DirContextAdapter;
@@ -30,7 +29,7 @@ public class LdapUserDetailsContextMapper implements UserDetailsContextMapper {
         map.put("Εργαστηριακό Διδακτικό Προσωπικό", ERole.PROFESSOR);
         map.put("Ειδικό Διδακτικό Προσωπικό", ERole.PROFESSOR);
         map.put("Ειδικό Τεχνικό Εργαστηριακό Προσωπικό", ERole.SECRETARY);
-        TITLE_ROLE_MAP = Collections.unmodifiableMap(map); // Make map immutable
+        TITLE_ROLE_MAP = Collections.unmodifiableMap(map);
     }
 
     @Override
@@ -77,6 +76,6 @@ public class LdapUserDetailsContextMapper implements UserDetailsContextMapper {
             return ERole.SECRETARY;
         }
 
-        throw new RoleMappingException("Access denied. Please contact your system administrator.");
+        throw new RoleMappingException();
     }
 }

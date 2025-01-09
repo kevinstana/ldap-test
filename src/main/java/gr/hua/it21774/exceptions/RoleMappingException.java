@@ -1,6 +1,9 @@
 package gr.hua.it21774.exceptions;
 
 public class RoleMappingException extends RuntimeException {
+    public RoleMappingException() {
+    }
+
     public RoleMappingException(String message) {
         super(message);
     }

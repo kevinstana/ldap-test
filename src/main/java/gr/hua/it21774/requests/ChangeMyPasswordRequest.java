@@ -2,7 +2,7 @@ package gr.hua.it21774.requests;
 
 import jakarta.validation.constraints.NotBlank;
 
-public class ChangePasswordRequest {
+public class ChangeMyPasswordRequest {
 
     @NotBlank(message = "Current password required")
     private String currentPassword;
@@ -13,10 +13,10 @@ public class ChangePasswordRequest {
     @NotBlank(message = "New password verification required")
     private String verifyNewPassword;
 
-    public ChangePasswordRequest() {
+    public ChangeMyPasswordRequest() {
     }
 
-    public ChangePasswordRequest(String currentPassword, String newPassword, String verifyNewPassword) {
+    public ChangeMyPasswordRequest(String currentPassword, String newPassword, String verifyNewPassword) {
         this.currentPassword = currentPassword;
         this.newPassword = newPassword;
         this.verifyNewPassword = verifyNewPassword;
@@ -44,5 +44,9 @@ public class ChangePasswordRequest {
 
     public void setVerifyNewPassword(String verifyNewPassword) {
         this.verifyNewPassword = verifyNewPassword;
+    }
+
+    public boolean isPasswordMatch() {
+        return newPassword.equals(verifyNewPassword);
     }
 }

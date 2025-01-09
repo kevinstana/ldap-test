@@ -65,7 +65,6 @@ public class User {
         this.firstName = userDetails.getFirstName();
         this.lastName = userDetails.getLastName();
         this.createdAt = createdAt;
-        this.lastModified = createdAt;
         this.isEnabled = isEnabled;
         this.roleId = roleId;
     }

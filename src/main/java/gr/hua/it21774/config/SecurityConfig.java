@@ -2,8 +2,6 @@ package gr.hua.it21774.config;
 
 import java.util.Arrays;
 
-import org.springframework.ldap.pool.factory.*;
-
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -65,7 +63,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/login/**", "/login-external/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/external-users").hasAuthority("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/external-users/{id}/password-change").hasAuthority("EXTERNAL")
+                        .requestMatchers(HttpMethod.POST, "/external-users/me").hasAuthority("EXTERNAL")
+                        .requestMatchers(HttpMethod.POST, "/external-users/{username}/change-password")
+                        .hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/theses").hasAuthority("PROFESSOR")
                         .requestMatchers("/actuator/health/**").permitAll()
                         .anyRequest().authenticated())
