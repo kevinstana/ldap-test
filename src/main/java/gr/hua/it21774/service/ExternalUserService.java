@@ -2,6 +2,8 @@ package gr.hua.it21774.service;
 
 import java.time.Instant;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +15,7 @@ import gr.hua.it21774.exceptions.EntityExistsException;
 import gr.hua.it21774.exceptions.EntityNotFoundException;
 import gr.hua.it21774.exceptions.InvalidAttributeException;
 import gr.hua.it21774.requests.CreateExternalUserRequest;
+import gr.hua.it21774.responses.MessageRespone;
 import gr.hua.it21774.respository.ExternalUserRepository;
 import gr.hua.it21774.respository.RoleRepository;
 import gr.hua.it21774.respository.UserRepository;
@@ -44,11 +47,18 @@ public class ExternalUserService {
     }
 
     @Transactional
-    public void createExternalUser(CreateExternalUserRequest request, String password, ERole role) {
+    public void createExternalUser(CreateExternalUserRequest request) {
+        ERole role;
+        try {
+            role = ERole.valueOf(request.getRole().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new EntityNotFoundException("Role not found");
+        }
+
         Long roleId = roleRepository.findIdByRole(role).get();
 
         externalUserRepository
-                .save(new ExternalUser(0L, request.getUsername(), passwordEncoder.encode(password)));
+                .save(new ExternalUser(0L, request.getUsername(), passwordEncoder.encode(request.getPassword())));
 
         userRepository.save(new User(0L, request.getUsername(), request.getEmail(), request.getFirstnName(),
                 request.getLastName(), Instant.now(), null, null, true, roleId));

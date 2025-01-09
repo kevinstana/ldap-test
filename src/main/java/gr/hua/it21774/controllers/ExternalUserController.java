@@ -33,16 +33,8 @@ public class ExternalUserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageRespone("Password mismatch"));
         }
 
-        ERole role;
-        try {
-            role = ERole.valueOf(request.getRole().toUpperCase());
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new MessageRespone("Role not found: " + request.getRole()));
-        }
-
         externalUserService.checkIfExists(request.getUsername(), request.getEmail());
-        externalUserService.createExternalUser(request, request.getPassword(), role);
+        externalUserService.createExternalUser(request);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(new MessageRespone("User created successfully!"));
     }
