@@ -12,10 +12,10 @@ public class CreateThesisRequest {
 
     private String description;
 
-    @Pattern(regexp = "^[1-9]\\d{0,9}$", message = "Id must be a positive integer with 19 digits at most")
+    @Pattern(regexp = "^[1-9]\\d{0,18}$", message = "Id must be a positive integer with 19 digits at most")
     private String secondReviewerId;
 
-    @Pattern(regexp = "^[1-9]\\d{0,9}$", message = "Id must be a positive integer with 19 digits at most")
+    @Pattern(regexp = "^[1-9]\\d{0,18}$", message = "Id must be a positive integer with 19 digits at most")
     private String thirdReviewerId;
 
     public CreateThesisRequest(String title, String description, String secondReviewerId, String thirdReviewerId) {

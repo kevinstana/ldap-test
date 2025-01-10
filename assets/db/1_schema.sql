@@ -1,8 +1,8 @@
 -- Basic users table. Used to save application specific data about LDAP users and external users.
 create table if not exists users (
     id bigserial PRIMARY KEY,
-    username varchar(50) unique not null,
-    email varchar(50) unique not null,
+    username varchar(255) unique not null,
+    email varchar(255) unique not null,
     role_id bigint not null,
     first_name varchar(50) not null,
     last_name varchar(50) not null,
@@ -38,7 +38,7 @@ on conflict do nothing;
 -- External users table. Used to authenticate admin and test users.
 create table if not exists external_users (
     id bigserial PRIMARY KEY,
-    username varchar(50) unique not null,
+    username varchar(255) unique not null,
     password varchar(255) not null
 );
 

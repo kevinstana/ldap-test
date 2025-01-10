@@ -1,13 +1,13 @@
 package gr.hua.it21774.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 @Entity
-@Table(name = "external_users", uniqueConstraints = {
-        @UniqueConstraint(columnNames = "username"),
-        @UniqueConstraint(columnNames = "email")
-})
+@Table(name = "external_users")
 public class ExternalUser {
 
     @Id
@@ -15,11 +15,12 @@ public class ExternalUser {
     private Long id;
 
     @NotBlank
-    @Column(nullable = false, unique = true, length = 50)
+    @Size(max = 256, message = "Username cannot be longer than 256 characters.")
     private String username;
 
     @NotBlank
-    @Column(nullable = false)
+    @Size(max = 256, message = "Password cannot be longer than 256 characters.")
+    @JsonIgnore
     private String password;
 
     public ExternalUser() {

@@ -4,12 +4,10 @@ import java.time.Instant;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 @Entity
-@Table(name = "theses", uniqueConstraints = {
-        @UniqueConstraint(columnNames = "title"),
-        @UniqueConstraint(columnNames = "student_id")
-})
+@Table(name = "theses")
 public class Thesis {
 
     @Id
@@ -17,6 +15,7 @@ public class Thesis {
     private Long id;
 
     @NotBlank
+    @Size(max = 256, message = "Title cannot be longer than 256 characters.")
     private String title;
 
     @NotBlank

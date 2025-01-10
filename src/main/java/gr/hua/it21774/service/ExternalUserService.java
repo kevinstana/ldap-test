@@ -1,6 +1,7 @@
 package gr.hua.it21774.service;
 
 import java.time.Instant;
+import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -77,5 +78,9 @@ public class ExternalUserService {
         }
 
         externalUserRepository.updatePasswordByUsername(username, passwordEncoder.encode(requestNewPassword));
+    }
+
+    public List<ExternalUser> getAllExternalUsers() {
+        return externalUserRepository.findAll();
     }
 }

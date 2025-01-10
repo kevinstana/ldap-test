@@ -62,11 +62,17 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/login/**", "/login-external/**").permitAll()
+
+                        .requestMatchers(HttpMethod.GET, "/users").hasAuthority("ADMIN")
+
+                        .requestMatchers(HttpMethod.GET, "/external-users").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/external-users").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/external-users/me").hasAuthority("EXTERNAL")
                         .requestMatchers(HttpMethod.POST, "/external-users/{username}/change-password")
                         .hasAuthority("ADMIN")
+
                         .requestMatchers(HttpMethod.POST, "/theses").hasAuthority("PROFESSOR")
+
                         .requestMatchers("/actuator/health/**").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

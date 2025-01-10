@@ -7,12 +7,10 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 @Entity
-@Table(name = "users", uniqueConstraints = {
-        @UniqueConstraint(columnNames = "username"),
-        @UniqueConstraint(columnNames = "email")
-})
+@Table(name = "users")
 public class User {
 
     @Id
@@ -20,23 +18,25 @@ public class User {
     private Long id;
 
     @NotBlank
-    @Column(nullable = false, unique = true, length = 50)
+    @Size(max = 256, message = "Username cannot be longer than 256 characters.")
     private String username;
 
     @NotBlank
     @Email
-    @Column(nullable = false, unique = true, length = 50)
+    @Size(max = 256, message = "Email cannot be longer than 256 characters.")
     private String email;
 
     @NotBlank
-    @Column(name = "first_name", nullable = false, length = 50)
+    @Column(name = "first_name")
+    @Size(max = 50, message = "First name cannot be longer than 50 characters.")
     private String firstName;
 
     @NotBlank
-    @Column(name = "last_name", nullable = false, length = 50)
+    @Column(name = "last_name")
+    @Size(max = 50, message = "Last name cannot be longer than 50 characters.")
     private String lastName;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at", updatable = false)
     private Instant createdAt;
 
     @Column(name = "last_modified")
@@ -45,11 +45,11 @@ public class User {
     @Column(name = "last_modified_by")
     private Long lastModifiedBy;
 
-    @Column(name = "is_enabled", nullable = false)
+    @Column(name = "is_enabled")
     private Boolean isEnabled = true;
 
     @NotNull
-    @Column(name = "role_id", nullable = false)
+    @Column(name = "role_id")
     private Long roleId;
 
     public User() {

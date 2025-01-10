@@ -1,5 +1,6 @@
 package gr.hua.it21774.respository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,6 +13,8 @@ import gr.hua.it21774.enums.ERole;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
+
+    List<User> findAll();
 
     Boolean existsByEmail(String email);
 

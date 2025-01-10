@@ -32,7 +32,7 @@ public class CreateExternalUserRequest {
     private String firstnName;
 
     @NotBlank(message = "Last name required")
-    @Size(max = 256, message = "Last name cannot be longer than 50 characters.")
+    @Size(max = 50, message = "Last name cannot be longer than 50 characters.")
     private String lastName;
 
     public String getUsername() {

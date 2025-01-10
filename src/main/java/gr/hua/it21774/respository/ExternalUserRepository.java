@@ -1,5 +1,6 @@
 package gr.hua.it21774.respository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,22 +15,24 @@ import jakarta.transaction.Transactional;
 @Repository
 public interface ExternalUserRepository extends JpaRepository<ExternalUser, Long> {
 
-    Boolean existsByUsername(String username);
+        List<ExternalUser> findAll();
 
-    @Query("SELECT new gr.hua.it21774.dto.ExternalUserDTO(u.id, e.username, e.password, u.email, r.role, u.isEnabled) "
-            +
-            "FROM ExternalUser e " +
-            "JOIN User u ON e.username = u.username " +
-            "JOIN Role r ON u.roleId = r.id " +
-            "WHERE e.username = :username")
-    Optional<ExternalUserDTO> findByUsername(String username);
+        Boolean existsByUsername(String username);
 
-    @Query("SELECT e.password " +
-            "FROM ExternalUser e WHERE e.username = :username ")
-    Optional<String> findPasswordByUsername(String username);
+        @Query("SELECT new gr.hua.it21774.dto.ExternalUserDTO(u.id, e.username, e.password, u.email, r.role, u.isEnabled) "
+                        +
+                        "FROM ExternalUser e " +
+                        "JOIN User u ON e.username = u.username " +
+                        "JOIN Role r ON u.roleId = r.id " +
+                        "WHERE e.username = :username")
+        Optional<ExternalUserDTO> findByUsername(String username);
 
-    @Transactional
-    @Modifying
-    @Query("UPDATE ExternalUser e SET e.password = :password WHERE e.username = :username")
-    int updatePasswordByUsername(String username, String password);
+        @Query("SELECT e.password " +
+                        "FROM ExternalUser e WHERE e.username = :username ")
+        Optional<String> findPasswordByUsername(String username);
+
+        @Transactional
+        @Modifying
+        @Query("UPDATE ExternalUser e SET e.password = :password WHERE e.username = :username")
+        int updatePasswordByUsername(String username, String password);
 }
