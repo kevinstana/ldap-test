@@ -1,6 +1,7 @@
 package gr.hua.it21774.controllers;
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import gr.hua.it21774.dto.EnabledUserDTO;
-import gr.hua.it21774.exceptions.AccountDisabledException;
+import gr.hua.it21774.exceptions.GenericException;
 import gr.hua.it21774.helpers.AuthDetails;
 import gr.hua.it21774.requests.LoginRequest;
 import gr.hua.it21774.responses.AuthResponse;
@@ -54,7 +55,8 @@ public class LdapAuthController {
                         Long id = ldapAuthService.ldapUserToLocal(userDetails);
                         user.setId(id);
                 } else if (!user.getIsEnabled()) {
-                        throw new AccountDisabledException();
+                        throw new GenericException(HttpStatus.FORBIDDEN,
+                                        "Account disabled. Please contact your system administrator.");
                 }
 
                 AuthDetails authDetails = new AuthDetails(authentication, user.getId(), false);

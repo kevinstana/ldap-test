@@ -3,7 +3,6 @@ package gr.hua.it21774.service;
 import java.time.Instant;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,11 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 import gr.hua.it21774.entities.ExternalUser;
 import gr.hua.it21774.entities.User;
 import gr.hua.it21774.enums.ERole;
-import gr.hua.it21774.exceptions.EntityExistsException;
-import gr.hua.it21774.exceptions.EntityNotFoundException;
-import gr.hua.it21774.exceptions.InvalidAttributeException;
+import gr.hua.it21774.exceptions.GenericException;
 import gr.hua.it21774.requests.CreateExternalUserRequest;
-import gr.hua.it21774.responses.MessageRespone;
 import gr.hua.it21774.respository.ExternalUserRepository;
 import gr.hua.it21774.respository.RoleRepository;
 import gr.hua.it21774.respository.UserRepository;
@@ -38,11 +34,11 @@ public class ExternalUserService {
 
     public void checkIfExists(String username, String email) {
         if (externalUserRepository.existsByUsername(username)) {
-            throw new EntityExistsException("Username already in use");
+            throw new GenericException(HttpStatus.CONFLICT, "Username already in use");
         }
 
         if (userRepository.existsByEmail(email)) {
-            throw new EntityExistsException("Email already in use");
+            throw new GenericException(HttpStatus.CONFLICT, "Email already in use");
         }
     }
 
@@ -52,7 +48,7 @@ public class ExternalUserService {
         try {
             role = ERole.valueOf(request.getRole().toUpperCase());
         } catch (IllegalArgumentException e) {
-            throw new EntityNotFoundException("Role not found");
+            throw new GenericException(HttpStatus.UNPROCESSABLE_ENTITY, "Invalid role");
         }
 
         Long roleId = roleRepository.findIdByRole(role).get();
@@ -69,7 +65,7 @@ public class ExternalUserService {
                 .findPasswordByUsername(username).orElse("");
 
         if (!passwordEncoder.matches(requestCurrentPassword, currentPassword)) {
-            throw new InvalidAttributeException("Invalid current password");
+            throw new GenericException(HttpStatus.BAD_REQUEST, "Invalid current password");
         }
 
         externalUserRepository.updatePasswordByUsername(username, passwordEncoder.encode(requestNewPassword));
@@ -77,7 +73,7 @@ public class ExternalUserService {
 
     public void changePasswordAsAdmin(String username, String requestNewPassword) {
         if (!externalUserRepository.existsByUsername(username)) {
-            throw new EntityNotFoundException("External user not found");
+            throw new GenericException(HttpStatus.NOT_FOUND, "External user not found");
         }
 
         externalUserRepository.updatePasswordByUsername(username, passwordEncoder.encode(requestNewPassword));

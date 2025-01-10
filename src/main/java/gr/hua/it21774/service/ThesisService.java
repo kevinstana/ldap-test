@@ -8,14 +8,14 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import gr.hua.it21774.entities.Thesis;
 import gr.hua.it21774.enums.ERole;
-import gr.hua.it21774.exceptions.EntityExistsException;
-import gr.hua.it21774.exceptions.InvalidAttributeException;
+import gr.hua.it21774.exceptions.GenericException;
 import gr.hua.it21774.requests.CreateThesisRequest;
 import gr.hua.it21774.respository.ThesisRepository;
 import gr.hua.it21774.respository.UserRepository;
@@ -42,11 +42,11 @@ public class ThesisService {
         Set<Long> reviewerIds = new HashSet<Long>(
                 Arrays.asList(secondReviewerId, thirdReviewerId));
         if (reviewerIds.contains(createdBy)) {
-            throw new InvalidAttributeException("You can't assing yourself as an extra reviewer.");
+            throw new GenericException(HttpStatus.BAD_REQUEST, "You can't assing yourself as an extra reviewer.");
         }
 
         if (thesisRepository.existsByTitle(request.getTitle())) {
-            throw new EntityExistsException("A thesis with this title already exists.");
+            throw new GenericException(HttpStatus.CONFLICT, "A thesis with this title already exists.");
         }
         validateReviewerPair(secondReviewerId, thirdReviewerId);
 
@@ -77,15 +77,16 @@ public class ThesisService {
             map.forEach((id, errorMessage) -> {
                 if (id == null
                         && !userRepository.hasRole(id == secondReviewerId ? thirdReviewerId : id, ERole.PROFESSOR)) {
-                    throw new InvalidAttributeException(errorMessage);
+                    throw new GenericException(HttpStatus.BAD_REQUEST, errorMessage);
                 }
             });
         } else if (secondReviewerId.equals(thirdReviewerId)) {
-            throw new InvalidAttributeException("The reviewers can't have the same id.");
+            throw new GenericException(HttpStatus.BAD_REQUEST, "The reviewers can't have the same id.");
         } else {
             map.forEach((id, errorMessage) -> {
                 if (!userRepository.hasRole(id, ERole.PROFESSOR)) {
-                    throw new InvalidAttributeException(map.get(id == secondReviewerId ?thirdReviewerId : secondReviewerId));
+                    throw new GenericException(HttpStatus.BAD_REQUEST,
+                            map.get(id == secondReviewerId ? thirdReviewerId : secondReviewerId));
                 }
             });
         }

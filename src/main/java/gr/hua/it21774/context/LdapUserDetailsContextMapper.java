@@ -4,9 +4,10 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.ldap.userdetails.UserDetailsContextMapper;
 
 import gr.hua.it21774.enums.ERole;
-import gr.hua.it21774.exceptions.RoleMappingException;
+import gr.hua.it21774.exceptions.GenericException;
 import gr.hua.it21774.userdetails.AppUserDetails;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.ldap.core.DirContextAdapter;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -76,6 +77,6 @@ public class LdapUserDetailsContextMapper implements UserDetailsContextMapper {
             return ERole.SECRETARY;
         }
 
-        throw new RoleMappingException();
+        throw new GenericException(HttpStatus.UNAUTHORIZED, "Access denied. Please contact your system administrator.");
     }
 }

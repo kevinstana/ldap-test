@@ -52,31 +52,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageRespone(errorMessage));
     }
 
-    @ExceptionHandler(RoleMappingException.class)
-    public ResponseEntity<Object> handleRoleMappingException(RoleMappingException e) {
-
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(new MessageRespone("Access denied. Please contact your system administrator."));
-    }
-
-    @ExceptionHandler(AccountDisabledException.class)
-    public ResponseEntity<Object> handleAccountDisabledException(AccountDisabledException e) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                .body(new MessageRespone("Account disabled. Please contact your system administrator."));
-    }
-
-    @ExceptionHandler(EntityExistsException.class)
-    public ResponseEntity<Object> handleEntityExistsException(EntityExistsException e) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(new MessageRespone(e.getMessage()));
-    }
-
-    @ExceptionHandler(InvalidAttributeException.class)
-    public ResponseEntity<Object> handleInvalidAttributeException(InvalidAttributeException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageRespone(e.getMessage()));
-    }
-
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<Object> handleEntityNotFoundException(EntityNotFoundException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageRespone(e.getMessage()));
+    @ExceptionHandler(GenericException.class)
+    public ResponseEntity<Object> handleGenericException(GenericException e) {
+        return ResponseEntity.status(e.getStatus()).body(new MessageRespone(e.getCustomMessage()));
     }
 }

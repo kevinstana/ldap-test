@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import gr.hua.it21774.enums.ERole;
 import gr.hua.it21774.requests.AdminChangePasswordRequest;
 import gr.hua.it21774.requests.ChangeMyPasswordRequest;
 import gr.hua.it21774.requests.CreateExternalUserRequest;
