@@ -47,11 +47,13 @@ public class AppUserDetails implements UserDetails {
 
     // Consructor used in ExternalUserDetailsService
     public AppUserDetails(Long id, String username, String password,
-            String email, ERole role, boolean isEnabled) {
+            String email, String firstName, String lastName, ERole role, boolean isEnabled) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.role = role;
         this.isEnabled = isEnabled;
     }

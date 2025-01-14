@@ -11,7 +11,7 @@ public record JwtProperties(
 
                 String jwtSecret,
 
-                @DurationUnit(ChronoUnit.SECONDS) Duration accessTokenDurationMs,
+                @DurationUnit(ChronoUnit.MILLIS) Duration accessTokenDurationMs,
 
-                @DurationUnit(ChronoUnit.SECONDS) Duration refreshTokenDurationMs) {
+                @DurationUnit(ChronoUnit.MILLIS) Duration refreshTokenDurationMs) {
 }

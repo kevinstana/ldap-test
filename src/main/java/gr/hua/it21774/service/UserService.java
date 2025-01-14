@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import gr.hua.it21774.entities.User;
+import gr.hua.it21774.dto.UserListDTO;
 import gr.hua.it21774.respository.UserRepository;
 
 @Service
@@ -16,7 +16,7 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserListDTO> getAllUsers() {
+        return userRepository.customFindAll();
     }
 }

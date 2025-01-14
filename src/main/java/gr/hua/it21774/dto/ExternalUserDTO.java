@@ -7,19 +7,23 @@ public class ExternalUserDTO {
     private String username;
     private String password;
     private String email;
+    private String firstName;
+    private String lastName;
     private ERole role;
     private boolean isEnabled;
 
     public ExternalUserDTO() {
     }
 
-    public ExternalUserDTO(Long id, String username, String password, String email, 
-    ERole role,
-    boolean isEnabled) {
+    public ExternalUserDTO(Long id, String username, String password, String email, String firstName, String lastName,
+            ERole role,
+            boolean isEnabled) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.role = role;
         this.isEnabled = isEnabled;
     }
@@ -50,6 +54,22 @@ public class ExternalUserDTO {
 
     public String getEmail() {
         return email;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getLastName() {
+        return lastName;
     }
 
     public void setEmail(String email) {

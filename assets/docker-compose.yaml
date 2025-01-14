@@ -1,6 +1,5 @@
 services:
   db:
-    container_name: db
     image: postgres:14
     expose:
       - 5432
@@ -20,10 +19,7 @@ services:
     volumes:
       - './assets/db:/docker-entrypoint-initdb.d'
       - 'pgdata14:/var/lib/postgresql/data'
-    networks:
-      - digireg_network
   spring:
-    container_name: spring
     image: "spring-ldap"
     build:
       context: .
@@ -42,27 +38,6 @@ services:
       interval: 5s
       timeout: 5s
       retries: 2
-    networks:
-      - digireg_network
-  front:
-    container_name: front
-    image: "ghcr.io/kevinstana/next"
-    build:
-      context: ../front/front
-      dockerfile: ../front/Dockerfile
-      # args:
-      #   AUTH_SECRET: 348412897bfab5dfbd754c94dfdc4be45909f44db07c74494d75d514bd91f935
-      #   AUTH_TRUST_HOST: true
-      #   API_URL: http://spring:9090/api
-    restart: always
-    ports:
-        - 3000:3000
-    networks:
-      - digireg_network
 
 volumes:
     pgdata14:
-
-networks:
-  digireg_network:
-    external: false # true

@@ -18,6 +18,7 @@ import gr.hua.it21774.exceptions.GenericException;
 import gr.hua.it21774.helpers.AuthDetails;
 import gr.hua.it21774.requests.LoginRequest;
 import gr.hua.it21774.responses.AuthResponse;
+import gr.hua.it21774.responses.Tokens;
 import gr.hua.it21774.service.JwtService;
 import gr.hua.it21774.service.LdapAuthService;
 import gr.hua.it21774.userdetails.AppUserDetails;
@@ -60,7 +61,10 @@ public class LdapAuthController {
                 }
 
                 AuthDetails authDetails = new AuthDetails(authentication, user.getId(), false);
-                AuthResponse authResponse = jwtUtils.generateTokens(authDetails);
+                Tokens tokens = jwtUtils.generateTokens(authDetails);
+                AuthResponse authResponse = new AuthResponse(authDetails.getId(), userDetails.getUsername(),
+                                userDetails.getEmail(), userDetails.getFirstName(), userDetails.getLastName(),
+                                userDetails.getRole().name(), tokens.getAccessToken(), tokens.getRefreshToken());
 
                 return ResponseEntity.ok().body(authResponse);
         }

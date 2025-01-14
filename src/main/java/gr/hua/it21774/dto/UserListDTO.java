@@ -1,26 +1,32 @@
-package gr.hua.it21774.responses;
+package gr.hua.it21774.dto;
 
-public class AuthResponse {
+import java.time.Instant;
+
+import gr.hua.it21774.enums.ERole;
+
+public class UserListDTO {
     private Long id;
     private String username;
     private String email;
     private String firstName;
     private String lastName;
-    private String role;
-    private String accessToken;
-    private String refreshToken;
+    private Instant createdAt;
+    private boolean isEnabled;
+    private ERole role;
 
-    public AuthResponse(Long id, String username, String email, String firstName,
-            String lastName, String role, String accessToken,
-            String refreshToken) {
+    public UserListDTO(Long id, String username, String email, String firstName, String lastName,
+            Instant createdAt, boolean isEnabled, ERole role) {
         this.id = id;
         this.username = username;
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.createdAt = createdAt;
+        this.isEnabled = isEnabled;
         this.role = role;
-        this.accessToken = accessToken;
-        this.refreshToken = refreshToken;
+    }
+
+    public UserListDTO() {
     }
 
     public Long getId() {
@@ -63,27 +69,27 @@ public class AuthResponse {
         this.lastName = lastName;
     }
 
-    public String getRole() {
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public boolean isEnabled() {
+        return isEnabled;
+    }
+
+    public void setEnabled(boolean isEnabled) {
+        this.isEnabled = isEnabled;
+    }
+
+    public ERole getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(ERole role) {
         this.role = role;
-    }
-
-    public String getAccessToken() {
-        return accessToken;
-    }
-
-    public void setAccessToken(String accessToken) {
-        this.accessToken = accessToken;
-    }
-
-    public String getRefreshToken() {
-        return refreshToken;
-    }
-
-    public void setRefreshToken(String refreshToken) {
-        this.refreshToken = refreshToken;
     }
 }

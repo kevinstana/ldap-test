@@ -25,6 +25,8 @@ public class ExternalUserDetailsService implements UserDetailsService {
         AppUserDetails userDetails = new AppUserDetails(externalUser.getId(), externalUser.getUsername(),
                 externalUser.getPassword(),
                 externalUser.getEmail(),
+                externalUser.getFirstName(),
+                externalUser.getLastName(),
                 externalUser.getRole(),
                 externalUser.getIsEnabled());
 

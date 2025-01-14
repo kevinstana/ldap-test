@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 import gr.hua.it21774.config.JwtProperties;
 import gr.hua.it21774.helpers.AuthDetails;
-import gr.hua.it21774.responses.AuthResponse;
+import gr.hua.it21774.responses.Tokens;
 import gr.hua.it21774.userdetails.AppUserDetails;
 import io.jsonwebtoken.security.SignatureException;
 
@@ -39,7 +39,7 @@ public class JwtService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public AuthResponse generateTokens(AuthDetails authDetails) {
+    public Tokens generateTokens(AuthDetails authDetails) {
         Authentication authentication = authDetails.getAuthentication();
         Long id = authDetails.getId();
         boolean isExternal = authDetails.getIsExternal();
@@ -50,9 +50,9 @@ public class JwtService {
         String accessToken = generateAccessToken(userDetails, instant, id, isExternal);
         String refreshToken = generateRefreshToken(userDetails, instant, accessToken, id);
 
-        AuthResponse authResponse = new AuthResponse(accessToken, refreshToken);
+        Tokens tokens = new Tokens(accessToken, refreshToken);
 
-        return authResponse;
+        return tokens;
     }
 
     private String generateAccessToken(AppUserDetails userDetails, Instant instant, Long id, boolean isExternal) {
@@ -77,11 +77,11 @@ public class JwtService {
     }
 
     private String generateRefreshToken(AppUserDetails userDetails, Instant instant, String accessToken, Long id) {
-        Long accessTokenIat = getTokenPayload(accessToken).getIssuedAt().getTime();
+        // Long accessTokenIat = getTokenPayload(accessToken).getIssuedAt().getTime();
 
         String refreshToken = Jwts.builder()
                 .subject(String.valueOf(id))
-                .claim("accessTokenIat", accessTokenIat)
+                .claim("accessTokenIat", Date.from(instant))
                 .issuedAt(Date.from(instant))
                 .expiration(Date.from(instant.plus(jwtProperties.refreshTokenDurationMs())))
                 .signWith(getSignInKey())
@@ -91,13 +91,17 @@ public class JwtService {
     }
 
     public Claims getTokenPayload(String token) {
-        Claims claims = Jwts.parser()
-                .verifyWith(this.getSignInKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
+        try {
+            Claims claims = Jwts.parser()
+                    .verifyWith(this.getSignInKey())
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
 
-        return claims;
+            return claims;
+        } catch (ExpiredJwtException e) {
+            return e.getClaims();
+        }
     }
 
     public Boolean validateAccessToken(String accessToken, String requestUri) {
@@ -126,13 +130,19 @@ public class JwtService {
                     return false;
                 }
 
-                Instant accessTokenIat = Instant.ofEpochMilli(accessClaims.getIssuedAt().getTime());
-                Instant now = Instant.now();
+                Long refrshDuration = jwtProperties.refreshTokenDurationMs().toSeconds();
+                Long accessIat = accessClaims.getIssuedAt().getTime() / 1000;
+                Long now = (Instant.now().toEpochMilli()) / 1000;
 
-                Duration elapsed = Duration.between(accessTokenIat, now);
-                boolean canRefresh = elapsed.compareTo(jwtProperties.refreshTokenDurationMs()) > 0;
+                logger.error("1 {}", refrshDuration);
+                logger.error("2 {}", accessIat);
+                logger.error("3 {}", now);
 
-                return canRefresh;
+                if (now - accessIat > refrshDuration) {
+                    return false;
+                }
+
+                return true;
             }
 
             logger.error("JWT is expired: {}", e.getMessage());
@@ -171,8 +181,8 @@ public class JwtService {
         String accessSub = accessClaims.getSubject();
         String refreshSub = refreshClaims.getSubject();
 
-        Long accessIat = accessClaims.getIssuedAt().getTime();
-        Long verifyAccessIat = refreshClaims.get("accessTokenIat", Long.class);
+        Long accessIat = accessClaims.getIssuedAt().getTime() / 1000;
+        Long verifyAccessIat = refreshClaims.get("accessTokenIat", Long.class) / 1000;
 
         boolean isTokenPairValid = Long.valueOf(accessIat).equals(verifyAccessIat)
                 && (accessSub.equals(refreshSub));

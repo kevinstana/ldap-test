@@ -1,5 +1,7 @@
 package gr.hua.it21774.controllers;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -10,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gr.hua.it21774.helpers.AuthDetails;
 import gr.hua.it21774.requests.RefreshTokenRequest;
-import gr.hua.it21774.responses.AuthResponse;
+import gr.hua.it21774.responses.Tokens;
 import gr.hua.it21774.responses.MessageRespone;
 import gr.hua.it21774.service.JwtService;
 import io.jsonwebtoken.Claims;
@@ -21,12 +23,16 @@ public class RefreshTokenController {
 
     private final JwtService jwtUtils;
 
+        private static final Logger logger = LoggerFactory.getLogger(JwtService.class);
+
+
     public RefreshTokenController(JwtService jwtUtils) {
         this.jwtUtils = jwtUtils;
     }
 
     @PostMapping("/refresh-token")
     public ResponseEntity<?> refreshToken(@Valid @RequestBody RefreshTokenRequest refreshTokenRequest) {
+        logger.error("hello {}", "hello");
 
         String refreshToken = refreshTokenRequest.getRefreshToken();
 
@@ -41,9 +47,9 @@ public class RefreshTokenController {
             Long id = Long.valueOf(accessTokenClaims.getSubject());
             if (jwtUtils.isTokenPairValid(accessTokenClaims, refreshToken)) {
                 AuthDetails authDetails = new AuthDetails(authentication, id, isExternal);
-                AuthResponse authResponse = jwtUtils.generateTokens(authDetails);
+                Tokens tokens = jwtUtils.generateTokens(authDetails);
 
-                return ResponseEntity.ok().body((authResponse));
+                return ResponseEntity.ok().body((tokens));
 
             }
         }
