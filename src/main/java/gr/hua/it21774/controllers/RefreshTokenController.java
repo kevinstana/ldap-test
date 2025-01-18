@@ -23,17 +23,12 @@ public class RefreshTokenController {
 
     private final JwtService jwtUtils;
 
-        private static final Logger logger = LoggerFactory.getLogger(JwtService.class);
-
-
     public RefreshTokenController(JwtService jwtUtils) {
         this.jwtUtils = jwtUtils;
     }
 
     @PostMapping("/refresh-token")
     public ResponseEntity<?> refreshToken(@Valid @RequestBody RefreshTokenRequest refreshTokenRequest) {
-        logger.error("hello {}", "hello");
-
         String refreshToken = refreshTokenRequest.getRefreshToken();
 
         if (jwtUtils.validateRefreshToken(refreshToken)) {

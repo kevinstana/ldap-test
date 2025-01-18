@@ -15,7 +15,6 @@ import gr.hua.it21774.responses.Tokens;
 import gr.hua.it21774.userdetails.AppUserDetails;
 import io.jsonwebtoken.security.SignatureException;
 
-import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
