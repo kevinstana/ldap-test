@@ -23,8 +23,8 @@ public class UserService {
         return userRepository.customFindAll();
     }
 
-    public Page<UserListDTO> getPagedUsers() {
-        Pageable pageable = PageRequest.of(0, 10);
+    public Page<UserListDTO> getPagedUsers(int pageNumber, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
         
         return userRepository.customFindAll(pageable);
     }
