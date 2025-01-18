@@ -26,8 +26,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
         @Query("SELECT new gr.hua.it21774.dto.UserListDTO(u.id, u.username, u.email, u.firstName, u.lastName, u.createdAt, u.isEnabled, r.role) "
                         +
                         "FROM User u JOIN Role r ON u.roleId = r.id "
+                        + "WHERE (:roles IS NULL OR r.role IN :roles) "
                         + "ORDER BY u.id ASC")
-        Page<UserListDTO> customFindAll(Pageable pageable);
+        Page<UserListDTO> customFindAll(Pageable pageable, List<ERole> roles);
 
         Boolean existsByEmail(String email);
 

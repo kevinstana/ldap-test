@@ -1,5 +1,6 @@
 package gr.hua.it21774.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import gr.hua.it21774.dto.UserListDTO;
+import gr.hua.it21774.enums.ERole;
 import gr.hua.it21774.service.UserService;
 
 @RestController
@@ -19,12 +21,34 @@ public class UserController {
     public UserController(UserService userService) {
         this.userService = userService;
     }
-    
-    @GetMapping("/users")
-    public ResponseEntity<?> getAllUsers(@RequestParam(defaultValue = "10") int page, @RequestParam(defaultValue = "0") int size) {
 
-        Page<UserListDTO> users = userService.getPagedUsers(page, size);
-        
+    @GetMapping("/users")
+    public ResponseEntity<?> getAllUsers(@RequestParam(required = false, defaultValue = "0") Integer page,
+            @RequestParam(required = false, defaultValue = "10") Integer size,
+            @RequestParam(required = false) List<String> roles) {
+
+        if (page == null) {
+            page = 0;
+        }
+
+        if (size == null) {
+            size = 10;
+        }
+
+        List<ERole> validRoles = new ArrayList<>();
+
+        if (roles != null) {
+            for (String role : roles) {
+                try {
+                    validRoles.add(ERole.valueOf(role.toUpperCase()));
+                } catch (IllegalArgumentException e) {
+                }
+            }
+        }
+
+        List<ERole> rolesToQuery = validRoles.isEmpty() ? null : validRoles;
+        Page<UserListDTO> users = userService.getPagedUsers(page, size, rolesToQuery);
+
         return ResponseEntity.ok().body(users);
     }
 }

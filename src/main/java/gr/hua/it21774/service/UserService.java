@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import gr.hua.it21774.dto.UserListDTO;
+import gr.hua.it21774.enums.ERole;
 import gr.hua.it21774.respository.UserRepository;
 
 @Service
@@ -23,9 +24,9 @@ public class UserService {
         return userRepository.customFindAll();
     }
 
-    public Page<UserListDTO> getPagedUsers(int pageNumber, int pageSize) {
+    public Page<UserListDTO> getPagedUsers(int pageNumber, int pageSize, List<ERole> roles) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         
-        return userRepository.customFindAll(pageable);
+        return userRepository.customFindAll(pageable, roles);
     }
 }
