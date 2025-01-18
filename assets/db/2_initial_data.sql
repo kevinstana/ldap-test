@@ -15,9 +15,9 @@ INSERT INTO external_users (username, password) VALUES
     ('professor5', '$2a$10$KM.4rAp55xBGoN36cFtysOpaolHZQO9.qeNmhavqe0LCStn4WXLBe'),
 
     ('secretary1', '$2a$10$KM.4rAp55xBGoN36cFtysOpaolHZQO9.qeNmhavqe0LCStn4WXLBe'),
-    ('secretary2', '$2a$10$KM.4rAp55xBGoN36cFtysOpaolHZQO9.qeNmhavqe0LCStn4WXLBe');
-    ('secretary3', '$2a$10$KM.4rAp55xBGoN36cFtysOpaolHZQO9.qeNmhavqe0LCStn4WXLBe');
-    ('secretary4', '$2a$10$KM.4rAp55xBGoN36cFtysOpaolHZQO9.qeNmhavqe0LCStn4WXLBe');
+    ('secretary2', '$2a$10$KM.4rAp55xBGoN36cFtysOpaolHZQO9.qeNmhavqe0LCStn4WXLBe'),
+    ('secretary3', '$2a$10$KM.4rAp55xBGoN36cFtysOpaolHZQO9.qeNmhavqe0LCStn4WXLBe'),
+    ('secretary4', '$2a$10$KM.4rAp55xBGoN36cFtysOpaolHZQO9.qeNmhavqe0LCStn4WXLBe'),
     ('secretary5', '$2a$10$KM.4rAp55xBGoN36cFtysOpaolHZQO9.qeNmhavqe0LCStn4WXLBe');
 
 INSERT INTO users (username, email, role_id, first_name, last_name, created_at, is_enabled) VALUES
@@ -36,7 +36,7 @@ INSERT INTO users (username, email, role_id, first_name, last_name, created_at, 
     ('professor5', 'professor5@test.com', 2, 'Professor', 'Five', NOW(), true),
 
     ('secretary1', 'secretary1@test.com', 3, 'Secretary', 'One', NOW(), true),
-    ('secretary2', 'secretary2@test.com', 3, 'Secretary', 'Two', NOW(), true);
-    ('secretary3', 'secretary3@test.com', 3, 'Secretary', 'Three', NOW(), true);
-    ('secretary4', 'secretary4@test.com', 3, 'Secretary', 'Four', NOW(), true);
+    ('secretary2', 'secretary2@test.com', 3, 'Secretary', 'Two', NOW(), true),
+    ('secretary3', 'secretary3@test.com', 3, 'Secretary', 'Three', NOW(), true),
+    ('secretary4', 'secretary4@test.com', 3, 'Secretary', 'Four', NOW(), true),
     ('secretary5', 'secretary5@test.com', 3, 'Secretary', 'Five', NOW(), true);
