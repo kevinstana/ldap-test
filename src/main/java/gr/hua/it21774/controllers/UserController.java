@@ -2,6 +2,7 @@ package gr.hua.it21774.controllers;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,7 +22,7 @@ public class UserController {
     @GetMapping("/users")
     public ResponseEntity<?> getAllUsers() {
 
-        List<UserListDTO> users = userService.getAllUsers();
+        Page<UserListDTO> users = userService.getPagedUsers();
         
         return ResponseEntity.ok().body(users);
     }

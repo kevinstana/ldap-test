@@ -12,37 +12,46 @@ import gr.hua.it21774.dto.UserListDTO;
 import gr.hua.it21774.entities.User;
 import gr.hua.it21774.enums.ERole;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    @Query("SELECT new gr.hua.it21774.dto.UserListDTO(u.id, u.username, u.email, u.firstName, u.lastName, u.createdAt, u.isEnabled, r.role) "
-            +
-            "FROM User u JOIN Role r ON u.roleId = r.id ")
-    List<UserListDTO> customFindAll();
+        @Query("SELECT new gr.hua.it21774.dto.UserListDTO(u.id, u.username, u.email, u.firstName, u.lastName, u.createdAt, u.isEnabled, r.role) "
+                        +
+                        "FROM User u JOIN Role r ON u.roleId = r.id ")
+        List<UserListDTO> customFindAll();
 
-    Boolean existsByEmail(String email);
+        @Query("SELECT new gr.hua.it21774.dto.UserListDTO(u.id, u.username, u.email, u.firstName, u.lastName, u.createdAt, u.isEnabled, r.role) "
+                        +
+                        "FROM User u JOIN Role r ON u.roleId = r.id "
+                        + "ORDER BY u.id ASC")
+        Page<UserListDTO> customFindAll(Pageable pageable);
 
-    @Query("SELECT " +
-            "CASE " +
-            "WHEN COUNT(u) > 0 " +
-            "THEN true " +
-            "ELSE false " +
-            "END " +
-            "FROM User u " +
-            "JOIN Role r ON u.roleId = r.id " +
-            "WHERE u.id = :id AND r.role = :role")
-    Boolean hasRole(Long id, ERole role);
+        Boolean existsByEmail(String email);
 
-    @Query("SELECT " +
-            "CASE " +
-            "WHEN COUNT(u) = 2 " +
-            "THEN true " +
-            "ELSE false " +
-            "END " +
-            "FROM User u " +
-            "JOIN Role r ON u.roleId = r.id " + "WHERE u.id IN (:id1, :id2) AND r.role = 'PROFESSOR'")
-    Boolean areProfessors(Long id1, Long id2);
+        @Query("SELECT " +
+                        "CASE " +
+                        "WHEN COUNT(u) > 0 " +
+                        "THEN true " +
+                        "ELSE false " +
+                        "END " +
+                        "FROM User u " +
+                        "JOIN Role r ON u.roleId = r.id " +
+                        "WHERE u.id = :id AND r.role = :role")
+        Boolean hasRole(Long id, ERole role);
 
-    @Query("SELECT new gr.hua.it21774.dto.EnabledUserDTO(u.id, u.isEnabled) FROM User u WHERE u.username = :username")
-    Optional<EnabledUserDTO> findIdAndIsEnabledByUsername(String username);
+        @Query("SELECT " +
+                        "CASE " +
+                        "WHEN COUNT(u) = 2 " +
+                        "THEN true " +
+                        "ELSE false " +
+                        "END " +
+                        "FROM User u " +
+                        "JOIN Role r ON u.roleId = r.id " + "WHERE u.id IN (:id1, :id2) AND r.role = 'PROFESSOR'")
+        Boolean areProfessors(Long id1, Long id2);
+
+        @Query("SELECT new gr.hua.it21774.dto.EnabledUserDTO(u.id, u.isEnabled) FROM User u WHERE u.username = :username")
+        Optional<EnabledUserDTO> findIdAndIsEnabledByUsername(String username);
 }
