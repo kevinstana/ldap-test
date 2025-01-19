@@ -20,10 +20,10 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public Page<CommonUserDTO> getPagedUsers(int pageNumber, int pageSize, List<ERole> roles) {
+    public Page<CommonUserDTO> getPagedUsers(Integer pageNumber, Integer pageSize, List<ERole> roles, Boolean enabled) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         
-        return userRepository.customFindAll(pageable, roles);
+        return userRepository.customFindAll(pageable, roles, enabled);
     }
 
     public Page<CommonUserDTO> getPagedHuaUsers(int pageNumber, int pageSize) {

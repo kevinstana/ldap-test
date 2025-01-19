@@ -25,7 +25,8 @@ public class UserController {
     @GetMapping("/users")
     public ResponseEntity<?> getAllUsers(@RequestParam(required = false, defaultValue = "0") Integer page,
             @RequestParam(required = false, defaultValue = "10") Integer size,
-            @RequestParam(required = false) List<String> roles) {
+            @RequestParam(required = false) List<String> roles,
+            @RequestParam(required = false) Boolean enabled) {
 
         if (page == null || page < 0) {
             page = 0;
@@ -47,7 +48,7 @@ public class UserController {
         }
 
         List<ERole> rolesToQuery = validRoles.isEmpty() ? null : validRoles;
-        Page<CommonUserDTO> users = userService.getPagedUsers(page, size, rolesToQuery);
+        Page<CommonUserDTO> users = userService.getPagedUsers(page, size, rolesToQuery, enabled);
 
         return ResponseEntity.ok().body(users);
     }

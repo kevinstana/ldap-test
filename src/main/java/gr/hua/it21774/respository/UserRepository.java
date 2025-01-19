@@ -22,8 +22,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
                         +
                         "FROM User u JOIN Role r ON u.roleId = r.id "
                         + "WHERE (:roles IS NULL OR r.role IN :roles) "
+                        + "AND (:enabled IS NULL OR u.isEnabled = :enabled) "
                         + "ORDER BY u.id ASC")
-        Page<CommonUserDTO> customFindAll(Pageable pageable, List<ERole> roles);
+        Page<CommonUserDTO> customFindAll(Pageable pageable, List<ERole> roles, Boolean enabled);
 
         @Query("SELECT new gr.hua.it21774.dto.CommonUserDTO(u.id, u.username, u.email, u.firstName, u.lastName, u.createdAt, r.role, u.isEnabled) "
                         + "FROM User u "
