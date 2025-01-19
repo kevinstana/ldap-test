@@ -4,29 +4,31 @@ import java.time.Instant;
 
 import gr.hua.it21774.enums.ERole;
 
-public class UserListDTO {
+public class CommonUserDTO {
+
     private Long id;
     private String username;
     private String email;
     private String firstName;
     private String lastName;
     private Instant createdAt;
-    private boolean isEnabled;
     private ERole role;
+    private boolean isEnabled;
 
-    public UserListDTO(Long id, String username, String email, String firstName, String lastName,
-            Instant createdAt, boolean isEnabled, ERole role) {
+    public CommonUserDTO() {
+    }
+
+    public CommonUserDTO(Long id, String username, String email, String firstName, String lastName, Instant createdAt,
+            ERole role,
+            boolean isEnabled) {
         this.id = id;
         this.username = username;
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
         this.createdAt = createdAt;
-        this.isEnabled = isEnabled;
         this.role = role;
-    }
-
-    public UserListDTO() {
+        this.isEnabled = isEnabled;
     }
 
     public Long getId() {
@@ -49,40 +51,32 @@ public class UserListDTO {
         return email;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
     public String getFirstName() {
         return firstName;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getLastName() {
         return lastName;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
     }
 
     public Instant getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public boolean isEnabled() {
-        return isEnabled;
-    }
-
-    public void setEnabled(boolean isEnabled) {
-        this.isEnabled = isEnabled;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public ERole getRole() {
@@ -91,5 +85,13 @@ public class UserListDTO {
 
     public void setRole(ERole role) {
         this.role = role;
+    }
+
+    public Boolean getIsEnabled() {
+        return isEnabled;
+    }
+
+    public void setIsEnabled(Boolean isEnabled) {
+        this.isEnabled = isEnabled;
     }
 }

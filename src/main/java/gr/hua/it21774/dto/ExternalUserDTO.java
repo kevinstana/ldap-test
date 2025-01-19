@@ -15,6 +15,7 @@ public class ExternalUserDTO {
     public ExternalUserDTO() {
     }
 
+    // Used in ExternalAUthController
     public ExternalUserDTO(Long id, String username, String password, String email, String firstName, String lastName,
             ERole role,
             boolean isEnabled) {

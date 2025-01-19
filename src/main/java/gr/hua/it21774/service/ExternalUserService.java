@@ -1,13 +1,16 @@
 package gr.hua.it21774.service;
 
 import java.time.Instant;
-import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import gr.hua.it21774.dto.CommonUserDTO;
 import gr.hua.it21774.entities.ExternalUser;
 import gr.hua.it21774.entities.User;
 import gr.hua.it21774.enums.ERole;
@@ -80,7 +83,9 @@ public class ExternalUserService {
         externalUserRepository.updatePasswordByUsername(username, passwordEncoder.encode(requestNewPassword));
     }
 
-    public List<ExternalUser> getAllExternalUsers() {
-        return externalUserRepository.findAll();
+    public Page<CommonUserDTO> getPagedUsers(int pageNumber, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        
+        return externalUserRepository.customFindAll(pageable);
     }
 }

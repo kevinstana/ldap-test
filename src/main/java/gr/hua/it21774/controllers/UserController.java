@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import gr.hua.it21774.dto.UserListDTO;
+import gr.hua.it21774.dto.CommonUserDTO;
 import gr.hua.it21774.enums.ERole;
 import gr.hua.it21774.service.UserService;
 
@@ -27,11 +27,11 @@ public class UserController {
             @RequestParam(required = false, defaultValue = "10") Integer size,
             @RequestParam(required = false) List<String> roles) {
 
-        if (page == null) {
+        if (page == null || page < 0) {
             page = 0;
         }
 
-        if (size == null) {
+        if (size == null || size < 1) {
             size = 10;
         }
 
@@ -47,7 +47,16 @@ public class UserController {
         }
 
         List<ERole> rolesToQuery = validRoles.isEmpty() ? null : validRoles;
-        Page<UserListDTO> users = userService.getPagedUsers(page, size, rolesToQuery);
+        Page<CommonUserDTO> users = userService.getPagedUsers(page, size, rolesToQuery);
+
+        return ResponseEntity.ok().body(users);
+    }
+
+    @GetMapping("/users/hua")
+    public ResponseEntity<?> getAllHuaUsers(@RequestParam(required = false, defaultValue = "0") Integer page,
+            @RequestParam(required = false, defaultValue = "10") Integer size) {
+
+        Page<CommonUserDTO> users = userService.getPagedHuaUsers(page, size);
 
         return ResponseEntity.ok().body(users);
     }

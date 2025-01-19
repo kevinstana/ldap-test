@@ -7,7 +7,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import gr.hua.it21774.dto.UserListDTO;
+import gr.hua.it21774.dto.CommonUserDTO;
 import gr.hua.it21774.enums.ERole;
 import gr.hua.it21774.respository.UserRepository;
 
@@ -20,13 +20,15 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public List<UserListDTO> getAllUsers() {
-        return userRepository.customFindAll();
-    }
-
-    public Page<UserListDTO> getPagedUsers(int pageNumber, int pageSize, List<ERole> roles) {
+    public Page<CommonUserDTO> getPagedUsers(int pageNumber, int pageSize, List<ERole> roles) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         
         return userRepository.customFindAll(pageable, roles);
+    }
+
+    public Page<CommonUserDTO> getPagedHuaUsers(int pageNumber, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        
+        return userRepository.customFindAllHua(pageable);
     }
 }

@@ -1,7 +1,6 @@
 package gr.hua.it21774.controllers;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -10,9 +9,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import gr.hua.it21774.entities.ExternalUser;
+import gr.hua.it21774.dto.CommonUserDTO;
 import gr.hua.it21774.requests.AdminChangePasswordRequest;
 import gr.hua.it21774.requests.ChangeMyPasswordRequest;
 import gr.hua.it21774.requests.CreateExternalUserRequest;
@@ -70,8 +70,9 @@ public class ExternalUserController {
     }
 
     @GetMapping("/external-users")
-    public ResponseEntity<?> getAllExternalUsers() {
-        List<ExternalUser> externalUsers = externalUserService.getAllExternalUsers();
+    public ResponseEntity<?> getAllExternalUsers(@RequestParam(required = false, defaultValue = "0") Integer page,
+            @RequestParam(required = false, defaultValue = "10") Integer size) {
+        Page<CommonUserDTO> externalUsers = externalUserService.getPagedUsers(page, size);
 
         return ResponseEntity.ok().body(externalUsers);
     }
