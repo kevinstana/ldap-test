@@ -1,6 +1,7 @@
 package gr.hua.it21774.service;
 
 import java.time.Instant;
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -60,7 +61,7 @@ public class ExternalUserService {
         externalUserRepository
                 .save(new ExternalUser(0L, request.getUsername(), passwordEncoder.encode(request.getPassword())));
 
-        userRepository.save(new User(0L, request.getUsername(), request.getEmail(), request.getFirstnName(),
+        userRepository.save(new User(0L, request.getUsername(), request.getEmail(), request.getFirstName(),
                 request.getLastName(), Instant.now(), null, null, true, roleId));
     }
 
@@ -83,9 +84,9 @@ public class ExternalUserService {
         externalUserRepository.updatePasswordByUsername(username, passwordEncoder.encode(requestNewPassword));
     }
 
-    public Page<CommonUserDTO> getPagedUsers(int pageNumber, int pageSize) {
+    public Page<CommonUserDTO> getPagedUsers(Integer pageNumber, Integer pageSize, List<ERole> roles, Boolean enabled) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         
-        return externalUserRepository.customFindAll(pageable);
+        return externalUserRepository.customFindAll(pageable, roles, enabled);
     }
 }

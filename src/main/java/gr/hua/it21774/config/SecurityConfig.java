@@ -66,6 +66,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/users").hasAuthority("ADMIN")
 
                         .requestMatchers(HttpMethod.GET, "/external-users").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/hua-users").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/external-users").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/external-users/me").hasAuthority("EXTERNAL")
                         .requestMatchers(HttpMethod.POST, "/external-users/{username}/change-password")

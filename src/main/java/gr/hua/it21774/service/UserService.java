@@ -22,13 +22,13 @@ public class UserService {
 
     public Page<CommonUserDTO> getPagedUsers(Integer pageNumber, Integer pageSize, List<ERole> roles, Boolean enabled) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        
+
         return userRepository.customFindAll(pageable, roles, enabled);
     }
 
-    public Page<CommonUserDTO> getPagedHuaUsers(int pageNumber, int pageSize) {
+    public Page<CommonUserDTO> getPagedHuaUsers(Integer pageNumber, Integer pageSize, List<ERole> roles, Boolean enabled) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        
-        return userRepository.customFindAllHua(pageable);
+
+        return userRepository.customFindAllHua(pageable, roles, enabled);
     }
 }

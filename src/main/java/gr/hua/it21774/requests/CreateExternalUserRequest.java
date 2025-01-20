@@ -29,7 +29,7 @@ public class CreateExternalUserRequest {
 
     @NotBlank(message = "First name required")
     @Size(max = 50, message = "First name cannot be longer than 50 characters.")
-    private String firstnName;
+    private String firstName;
 
     @NotBlank(message = "Last name required")
     @Size(max = 50, message = "Last name cannot be longer than 50 characters.")
@@ -75,12 +75,12 @@ public class CreateExternalUserRequest {
         this.role = role;
     }
 
-    public String getFirstnName() {
-        return firstnName;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setFirstnName(String firstnName) {
-        this.firstnName = firstnName;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
     public String getLastName() {

@@ -31,8 +31,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
                         + "LEFT JOIN ExternalUser e ON u.username = e.username "
                         + "JOIN Role r ON u.roleId = r.id "
                         + "WHERE e.username IS NULL "
+                        + "AND (:roles IS NULL OR r.role IN :roles) "
+                        + "AND (:enabled IS NULL OR u.isEnabled = :enabled) "
                         + "ORDER BY u.id ASC")
-        Page<CommonUserDTO> customFindAllHua(Pageable pageable);
+        Page<CommonUserDTO> customFindAllHua(Pageable pageable, List<ERole> roles, Boolean enabled);
 
         Boolean existsByEmail(String email);
 

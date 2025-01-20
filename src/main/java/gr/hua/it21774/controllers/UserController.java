@@ -53,11 +53,34 @@ public class UserController {
         return ResponseEntity.ok().body(users);
     }
 
-    @GetMapping("/users/hua")
+    @GetMapping("/hua-users")
     public ResponseEntity<?> getAllHuaUsers(@RequestParam(required = false, defaultValue = "0") Integer page,
-            @RequestParam(required = false, defaultValue = "10") Integer size) {
+            @RequestParam(required = false, defaultValue = "10") Integer size,
+            @RequestParam(required = false) List<String> roles,
+            @RequestParam(required = false) Boolean enabled) {
 
-        Page<CommonUserDTO> users = userService.getPagedHuaUsers(page, size);
+        if (page == null || page < 0) {
+            page = 0;
+        }
+
+        if (size == null || size < 1) {
+            size = 10;
+        }
+
+        List<ERole> validRoles = new ArrayList<>();
+
+        if (roles != null) {
+            for (String role : roles) {
+                try {
+                    validRoles.add(ERole.valueOf(role.toUpperCase()));
+                } catch (IllegalArgumentException e) {
+                }
+            }
+        }
+
+        List<ERole> rolesToQuery = validRoles.isEmpty() ? null : validRoles;
+
+        Page<CommonUserDTO> users = userService.getPagedHuaUsers(page, size, rolesToQuery, enabled);
 
         return ResponseEntity.ok().body(users);
     }

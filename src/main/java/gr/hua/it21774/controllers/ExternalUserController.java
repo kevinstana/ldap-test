@@ -1,5 +1,8 @@
 package gr.hua.it21774.controllers;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import gr.hua.it21774.dto.CommonUserDTO;
+import gr.hua.it21774.enums.ERole;
 import gr.hua.it21774.requests.AdminChangePasswordRequest;
 import gr.hua.it21774.requests.ChangeMyPasswordRequest;
 import gr.hua.it21774.requests.CreateExternalUserRequest;
@@ -28,6 +32,38 @@ public class ExternalUserController {
 
     public ExternalUserController(ExternalUserService externalUserService) {
         this.externalUserService = externalUserService;
+    }
+
+    @GetMapping("/external-users")
+    public ResponseEntity<?> getAllExternalUsers(@RequestParam(required = false, defaultValue = "0") Integer page,
+            @RequestParam(required = false, defaultValue = "10") Integer size,
+            @RequestParam(required = false) List<String> roles,
+            @RequestParam(required = false) Boolean enabled) {
+
+        if (page == null || page < 0) {
+            page = 0;
+        }
+
+        if (size == null || size < 1) {
+            size = 10;
+        }
+
+        List<ERole> validRoles = new ArrayList<>();
+
+        if (roles != null) {
+            for (String role : roles) {
+                try {
+                    validRoles.add(ERole.valueOf(role.toUpperCase()));
+                } catch (IllegalArgumentException e) {
+                }
+            }
+        }
+
+        List<ERole> rolesToQuery = validRoles.isEmpty() ? null : validRoles;
+            
+        Page<CommonUserDTO> externalUsers = externalUserService.getPagedUsers(page, size, rolesToQuery, enabled);
+
+        return ResponseEntity.ok().body(externalUsers);
     }
 
     @PostMapping("/external-users")
@@ -67,13 +103,5 @@ public class ExternalUserController {
         externalUserService.changePasswordAsAdmin(username, request.getNewPassword());
 
         return ResponseEntity.ok().body(new MessageRespone("Password updated successfully!"));
-    }
-
-    @GetMapping("/external-users")
-    public ResponseEntity<?> getAllExternalUsers(@RequestParam(required = false, defaultValue = "0") Integer page,
-            @RequestParam(required = false, defaultValue = "10") Integer size) {
-        Page<CommonUserDTO> externalUsers = externalUserService.getPagedUsers(page, size);
-
-        return ResponseEntity.ok().body(externalUsers);
     }
 }
