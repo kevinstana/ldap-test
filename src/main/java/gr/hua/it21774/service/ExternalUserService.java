@@ -7,6 +7,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +22,7 @@ import gr.hua.it21774.requests.CreateExternalUserRequest;
 import gr.hua.it21774.respository.ExternalUserRepository;
 import gr.hua.it21774.respository.RoleRepository;
 import gr.hua.it21774.respository.UserRepository;
+import io.jsonwebtoken.Claims;
 
 @Service
 public class ExternalUserService {
@@ -61,8 +64,14 @@ public class ExternalUserService {
         externalUserRepository
                 .save(new ExternalUser(0L, request.getUsername(), passwordEncoder.encode(request.getPassword())));
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Claims accessTokenClaims = (Claims) authentication.getDetails();
+
+        Long createdBy = Long.valueOf(accessTokenClaims.getSubject());
+        Instant now = Instant.now();
+
         userRepository.save(new User(0L, request.getUsername(), request.getEmail(), request.getFirstName(),
-                request.getLastName(), Instant.now(), null, null, true, roleId));
+                request.getLastName(), now, now, createdBy, true, roleId));
     }
 
     public void handleMyPasswordChange(String username, String requestCurrentPassword, String requestNewPassword) {
@@ -84,9 +93,22 @@ public class ExternalUserService {
         externalUserRepository.updatePasswordByUsername(username, passwordEncoder.encode(requestNewPassword));
     }
 
-    public Page<CommonUserDTO> getPagedUsers(Integer pageNumber, Integer pageSize, List<ERole> roles, Boolean enabled) {
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        
+    public Page<CommonUserDTO> getPagedUsers(Integer pageNumber, String pageSize, List<ERole> roles, Boolean enabled) {
+        Pageable pageable;
+
+        if (pageSize.equals("ALL")) {
+            pageable = Pageable.unpaged();
+        } else {
+            pageable = PageRequest.of(pageNumber, Integer.parseInt(pageSize));
+        }
+
         return externalUserRepository.customFindAll(pageable, roles, enabled);
+    }
+
+    public CommonUserDTO getExternalUserProfile(String username) {
+        CommonUserDTO profile = externalUserRepository.getExternalUserProfile(username)
+                .orElse(new CommonUserDTO());
+
+        return profile;
     }
 }

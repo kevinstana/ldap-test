@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS theses (
 
 
 -- Thesis status types and table
-create type thesis_status_type as enum ('DRAFT', 'AVAILABLE', 'IN_PROGRESS', 'COMPLETED', 'EVALUATED', 'PUBLISHED', 'CANCELLED');
+create type thesis_status_type as enum ('DRAFT', 'AVAILABLE', 'IN_PROGRESS', 'PENDING_PRESENTATION', 'REVIEWED', 'PUBLISHED', 'CANCELLED');
 
 create table if not exists thesis_status (
     id serial primary key,
@@ -87,8 +87,8 @@ insert into thesis_status (status) values
     ('DRAFT'),
     ('AVAILABLE'),
     ('IN_PROGRESS'),
-    ('COMPLETED'),
-    ('EVALUATED'),
+    ('PENDING_PRESENTATION'),
+    ('REVIEWED'),
     ('PUBLISHED'),
     ('CANCELLED')
 on conflict do nothing;

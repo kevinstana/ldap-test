@@ -57,16 +57,17 @@ public class User {
 
     // Constructor used in LdapAuthController to create a new user in local db
     public User(Long id, AppUserDetails userDetails,
-            Instant createdAt,
+            Instant now,
             Boolean isEnabled, Long roleId) {
         this.id = id;
         this.username = userDetails.getUsername();
         this.email = userDetails.getEmail();
         this.firstName = userDetails.getFirstName();
         this.lastName = userDetails.getLastName();
-        this.createdAt = createdAt;
+        this.createdAt = now;
         this.isEnabled = isEnabled;
         this.roleId = roleId;
+        this.lastModified = now;
     }
 
     // Not used somewhere at the moment

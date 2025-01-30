@@ -23,6 +23,6 @@ public class ThesisController {
     public ResponseEntity<?> createThesis(@Valid @RequestBody CreateThesisRequest request) {
         thesisService.handleThesisCreation(request);
 
-        return ResponseEntity.ok().body("hello from thesis");
+        return ResponseEntity.ok().body(request);
     }
 }

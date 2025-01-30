@@ -1,9 +1,11 @@
 package gr.hua.it21774.respository;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -18,18 +20,20 @@ import org.springframework.data.domain.Pageable;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-        @Query("SELECT new gr.hua.it21774.dto.CommonUserDTO(u.id, u.username, u.email, u.firstName, u.lastName, u.createdAt, r.role, u.isEnabled) "
+        @Query("SELECT new gr.hua.it21774.dto.CommonUserDTO(u.id, u.username, u.email, u.firstName, u.lastName, u.createdAt, r.role, u.isEnabled, u.lastModified, lm.username AS lastModifiedBy) "
                         +
                         "FROM User u JOIN Role r ON u.roleId = r.id "
+                        + "LEFT JOIN User lm ON u.lastModifiedBy = lm.id "
                         + "WHERE (:roles IS NULL OR r.role IN :roles) "
                         + "AND (:enabled IS NULL OR u.isEnabled = :enabled) "
                         + "ORDER BY u.id ASC")
         Page<CommonUserDTO> customFindAll(Pageable pageable, List<ERole> roles, Boolean enabled);
 
-        @Query("SELECT new gr.hua.it21774.dto.CommonUserDTO(u.id, u.username, u.email, u.firstName, u.lastName, u.createdAt, r.role, u.isEnabled) "
+        @Query("SELECT new gr.hua.it21774.dto.CommonUserDTO(u.id, u.username, u.email, u.firstName, u.lastName, u.createdAt, r.role, u.isEnabled, u.lastModified, lm.username AS lastModifiedBy) "
                         + "FROM User u "
                         + "LEFT JOIN ExternalUser e ON u.username = e.username "
                         + "JOIN Role r ON u.roleId = r.id "
+                        + "LEFT JOIN User lm ON u.lastModifiedBy = lm.id "
                         + "WHERE e.username IS NULL "
                         + "AND (:roles IS NULL OR r.role IN :roles) "
                         + "AND (:enabled IS NULL OR u.isEnabled = :enabled) "
@@ -61,4 +65,29 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
         @Query("SELECT new gr.hua.it21774.dto.EnabledUserDTO(u.id, u.isEnabled) FROM User u WHERE u.username = :username")
         Optional<EnabledUserDTO> findIdAndIsEnabledByUsername(String username);
+
+        @Modifying
+        @Query("UPDATE User u SET u.isEnabled = :isEnabled, u.lastModified = :lastModified, u.lastModifiedBy = :lastModifiedBy WHERE u.id = :id")
+        int updateUser(Long id, Boolean isEnabled, Instant lastModified, Long lastModifiedBy);
+
+
+    @Query("""
+        SELECT new gr.hua.it21774.dto.CommonUserDTO(
+            u.id,
+            u.username,
+            u.email,
+            u.firstName,
+            u.lastName,
+            u.createdAt,
+            r.role,
+            u.isEnabled,
+            u.lastModified,
+            lm.username AS lastModifiedBy
+        )
+        FROM User u
+        JOIN Role r ON u.roleId = r.id
+        LEFT JOIN User lm ON u.lastModifiedBy = lm.id
+        WHERE u.username = :username
+    """)
+Optional<CommonUserDTO> getUserProfile(String username);
 }

@@ -32,9 +32,9 @@ public class LdapAuthService {
     public Long ldapUserToLocal(AppUserDetails userDetails) {
         Long roleId = roleRepository.findIdByRole(userDetails.getRole()).get();
 
-        Instant createdAt = Instant.now();
+        Instant now = Instant.now();
         User newUser = new User(0L, userDetails,
-                createdAt, true, roleId);
+                now, true, roleId);
         userRepository.save(newUser);
 
         return newUser.getId();

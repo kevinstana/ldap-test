@@ -14,13 +14,16 @@ public class CommonUserDTO {
     private Instant createdAt;
     private ERole role;
     private boolean isEnabled;
+    private Instant lastModified;
+    private String lastModifiedBy;
 
     public CommonUserDTO() {
     }
 
     public CommonUserDTO(Long id, String username, String email, String firstName, String lastName, Instant createdAt,
             ERole role,
-            boolean isEnabled) {
+            boolean isEnabled,
+            Instant lastModified, String lastModifiedBy) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -29,6 +32,8 @@ public class CommonUserDTO {
         this.createdAt = createdAt;
         this.role = role;
         this.isEnabled = isEnabled;
+        this.lastModified = lastModified;
+        this.lastModifiedBy = lastModifiedBy;
     }
 
     public Long getId() {
@@ -93,5 +98,21 @@ public class CommonUserDTO {
 
     public void setIsEnabled(Boolean isEnabled) {
         this.isEnabled = isEnabled;
+    }
+
+    public void setLastModified(Instant lastModified) {
+        this.lastModified = lastModified;
+    }
+
+    public Instant getLastModified() {
+        return lastModified;
+    }
+
+    public String getLastModifiedBy() {
+        return lastModifiedBy;
+    }
+
+    public void setLastModifiedBy(String lastModifiedBy) {
+        this.lastModifiedBy = lastModifiedBy;
     }
 }

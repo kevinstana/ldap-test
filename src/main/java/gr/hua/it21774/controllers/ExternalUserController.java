@@ -1,6 +1,7 @@
 package gr.hua.it21774.controllers;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -28,6 +29,7 @@ import jakarta.validation.Valid;
 @RestController
 public class ExternalUserController {
 
+    
     private final ExternalUserService externalUserService;
 
     public ExternalUserController(ExternalUserService externalUserService) {
@@ -35,17 +37,25 @@ public class ExternalUserController {
     }
 
     @GetMapping("/external-users")
-    public ResponseEntity<?> getAllExternalUsers(@RequestParam(required = false, defaultValue = "0") Integer page,
-            @RequestParam(required = false, defaultValue = "10") Integer size,
+    public ResponseEntity<?> getAllExternalUsers(@RequestParam(required = false) String page,
+            @RequestParam(required = false) String size,
             @RequestParam(required = false) List<String> roles,
             @RequestParam(required = false) Boolean enabled) {
 
-        if (page == null || page < 0) {
-            page = 0;
+        List<String> validSizeValues = Arrays.asList("5", "10", "15", "20", "ALL");    
+
+        Integer intPage = 0;
+        try {
+            intPage = Integer.parseInt(page);
+            if (intPage < 0) {
+                intPage = 0;
+            } 
+        } catch (Exception e) {
+            intPage = 0;
         }
 
-        if (size == null || size < 1) {
-            size = 10;
+        if (size == null || !validSizeValues.contains(size)) {
+            size = "15";
         }
 
         List<ERole> validRoles = new ArrayList<>();
@@ -60,8 +70,8 @@ public class ExternalUserController {
         }
 
         List<ERole> rolesToQuery = validRoles.isEmpty() ? null : validRoles;
-            
-        Page<CommonUserDTO> externalUsers = externalUserService.getPagedUsers(page, size, rolesToQuery, enabled);
+
+        Page<CommonUserDTO> externalUsers = externalUserService.getPagedUsers(intPage, size, rolesToQuery, enabled);
 
         return ResponseEntity.ok().body(externalUsers);
     }
@@ -91,6 +101,12 @@ public class ExternalUserController {
         externalUserService.handleMyPasswordChange(username, request.getCurrentPassword(), request.getNewPassword());
 
         return ResponseEntity.ok().body(new MessageRespone("Password updated successfully!"));
+    }
+
+    @GetMapping("/external-users/{username}")
+    public ResponseEntity<?> getExternalUserProfile(@PathVariable String username) {
+        CommonUserDTO profile = externalUserService.getExternalUserProfile(username);
+        return ResponseEntity.ok().body(profile);
     }
 
     @PostMapping("/external-users/{username}/change-password")

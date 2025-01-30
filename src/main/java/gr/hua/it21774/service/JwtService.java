@@ -133,10 +133,6 @@ public class JwtService {
                 Long accessIat = accessClaims.getIssuedAt().getTime() / 1000;
                 Long now = (Instant.now().toEpochMilli()) / 1000;
 
-                logger.error("1 {}", refrshDuration);
-                logger.error("2 {}", accessIat);
-                logger.error("3 {}", now);
-
                 if (now - accessIat > refrshDuration) {
                     return false;
                 }

@@ -4,8 +4,8 @@ public enum EThesisStatus {
     DRAFT,
     AVAILABLE,
     IN_PROGRESS,
-    COMPLETED,
-    EVALUATED,
+    PENDING_PRESENTATION,
+    REVIEWED,
     PUBLISHED,
     CANCELLED
 }

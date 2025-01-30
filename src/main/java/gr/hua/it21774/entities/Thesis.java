@@ -2,6 +2,7 @@ package gr.hua.it21774.entities;
 
 import java.time.Instant;
 
+import gr.hua.it21774.enums.EThesisStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -221,5 +222,30 @@ public class Thesis {
 
     public void setDocLink(String docLink) {
         this.docLink = docLink;
+    }
+
+    public static boolean isValidInitStatus(String value) {
+        if (value == null) {
+            return false;
+        }
+
+        if (EThesisStatus.DRAFT.name().equals(value) || EThesisStatus.AVAILABLE.name().equals(value)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public static boolean isValidStatus(String value) {
+        if (value == null) {
+            return false;
+        }
+
+        for (EThesisStatus status : EThesisStatus.values()) {
+            if (status.name().equals(value)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

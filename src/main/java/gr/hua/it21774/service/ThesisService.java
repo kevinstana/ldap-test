@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import gr.hua.it21774.entities.Thesis;
 import gr.hua.it21774.enums.ERole;
+import gr.hua.it21774.enums.EThesisStatus;
 import gr.hua.it21774.exceptions.GenericException;
 import gr.hua.it21774.requests.CreateThesisRequest;
 import gr.hua.it21774.respository.ThesisRepository;
@@ -53,8 +54,14 @@ public class ThesisService {
         if (request.getDescription().isBlank()) {
             request.setDescription("Pending description");
         }
-        Thesis thesis = new Thesis(request.getTitle(), request.getDescription(), createdBy, Instant.now(), null, null,
-                createdBy, null, secondReviewerId, thirdReviewerId, 1L, null, null, null,
+        
+        
+        String status = request.getStatus().toUpperCase();
+        Long statusId = Thesis.isValidInitStatus(status) ? thesisRepository.findIdByStatus(EThesisStatus.valueOf(status)).get() : 1L;
+
+        Instant now = Instant.now();
+        Thesis thesis = new Thesis(request.getTitle(), request.getDescription(), createdBy, now, now, createdBy,
+                createdBy, null, secondReviewerId, thirdReviewerId, statusId, null, null, null,
                 null, null);
 
         thesisRepository.save(thesis);
