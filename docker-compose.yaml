@@ -22,6 +22,20 @@ services:
       - 'pgdata14:/var/lib/postgresql/data'
     networks:
       - demo_network
+  minio:
+    container_name: minio
+    image: minio/minio:latest
+    ports:
+      - "9000:9000"   # Main API port
+      - "9001:9001"   # Console port
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio-data:/data
+    networks:
+      - demo_network
   spring:
     container_name: spring
     image: "ghcr.io/kevinstana/ldap-spring"
@@ -56,6 +70,7 @@ services:
 
 volumes:
     pgdata14:
+    minio-data:
 
 networks:
   demo_network:

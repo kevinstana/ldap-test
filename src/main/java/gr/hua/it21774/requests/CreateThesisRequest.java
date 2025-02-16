@@ -13,9 +13,11 @@ public class CreateThesisRequest {
     private String description;
 
     @Pattern(regexp = "^[1-9]\\d{0,18}$", message = "ID must be a positive integer with 19 digits at most")
+    @NotBlank(message = "Second reviewer required")
     private String secondReviewerId;
 
     @Pattern(regexp = "^[1-9]\\d{0,18}$", message = "ID must be a positive integer with 19 digits at most")
+    @NotBlank(message = "Third reviewer required")
     private String thirdReviewerId;
 
     private String status;

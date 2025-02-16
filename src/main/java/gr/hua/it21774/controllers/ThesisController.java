@@ -2,6 +2,7 @@ package gr.hua.it21774.controllers;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,6 +24,12 @@ public class ThesisController {
     public ResponseEntity<?> createThesis(@Valid @RequestBody CreateThesisRequest request) {
         thesisService.handleThesisCreation(request);
 
-        return ResponseEntity.ok().body(request);
+        return ResponseEntity.ok().body("Thesis created!");
+    }
+
+    @PutMapping("/theses")
+    public ResponseEntity<?> updateThesis(@Valid @RequestBody CreateThesisRequest request) {
+
+        return ResponseEntity.ok().body("Thesis updated!");
     }
 }

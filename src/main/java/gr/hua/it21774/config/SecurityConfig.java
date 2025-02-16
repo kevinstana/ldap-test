@@ -62,6 +62,9 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/login/**", "/login-external/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/upload/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/download/{filename}").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/courses/**").permitAll()
 
                         .requestMatchers(HttpMethod.GET, "/users").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/users").hasAuthority("ADMIN")

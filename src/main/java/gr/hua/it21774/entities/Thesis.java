@@ -28,6 +28,9 @@ public class Thesis {
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
+    @Column(name = "started_at")
+    private Instant startedAt;
+
     @Column(name = "last_modified")
     private Instant lastModified;
 
@@ -66,7 +69,9 @@ public class Thesis {
     public Thesis() {
     }
 
-    public Thesis(String title, String description, Long createdBy, Instant createdAt, Instant lastModified,
+    public Thesis(String title, String description, Long createdBy, Instant createdAt,
+            Instant lastModified,
+            Instant startedAt,
             Long lastModifiedBy, Long professorId, Long studentId, Long secondReviewerId,
             Long thirdReviewerId, Long statusId, Double professorGrade, Double secondReviewerGrade,
             Double thirdReviewerGrade, Integer views, String docLink) {
@@ -74,6 +79,7 @@ public class Thesis {
         this.description = description;
         this.createdBy = createdBy;
         this.createdAt = createdAt;
+        this.startedAt = startedAt;
         this.lastModified = lastModified;
         this.lastModifiedBy = lastModifiedBy;
         this.professorId = professorId;
@@ -126,6 +132,14 @@ public class Thesis {
 
     public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public Instant getStartedAt() {
+        return startedAt;
+    }
+
+    public void setStartedAt(Instant startedAt) {
+        this.startedAt = startedAt;
     }
 
     public Instant getLastModified() {
@@ -222,18 +236,6 @@ public class Thesis {
 
     public void setDocLink(String docLink) {
         this.docLink = docLink;
-    }
-
-    public static boolean isValidInitStatus(String value) {
-        if (value == null) {
-            return false;
-        }
-
-        if (EThesisStatus.DRAFT.name().equals(value) || EThesisStatus.AVAILABLE.name().equals(value)) {
-            return true;
-        }
-
-        return false;
     }
 
     public static boolean isValidStatus(String value) {

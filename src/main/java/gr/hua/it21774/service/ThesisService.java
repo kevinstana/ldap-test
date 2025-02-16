@@ -54,13 +54,11 @@ public class ThesisService {
         if (request.getDescription().isBlank()) {
             request.setDescription("Pending description");
         }
-        
-        
-        String status = request.getStatus().toUpperCase();
-        Long statusId = Thesis.isValidInitStatus(status) ? thesisRepository.findIdByStatus(EThesisStatus.valueOf(status)).get() : 1L;
+
+        Long statusId = thesisRepository.findIdByStatus(EThesisStatus.AVAILABLE).get();
 
         Instant now = Instant.now();
-        Thesis thesis = new Thesis(request.getTitle(), request.getDescription(), createdBy, now, now, createdBy,
+        Thesis thesis = new Thesis(request.getTitle(), request.getDescription(), createdBy, now, now, null, createdBy,
                 createdBy, null, secondReviewerId, thirdReviewerId, statusId, null, null, null,
                 null, null);
 
@@ -68,35 +66,23 @@ public class ThesisService {
     }
 
     private void validateReviewerPair(Long secondReviewerId, Long thirdReviewerId) {
-        boolean blankValues = (secondReviewerId == null && thirdReviewerId == null);
-        if (blankValues) {
-            return;
+
+        if (secondReviewerId.equals(thirdReviewerId)) {
+            throw new GenericException(HttpStatus.BAD_REQUEST, "The reviewers can't have the same id.");
         }
 
         Map<Long, String> map = Collections.unmodifiableMap(new HashMap<>() {
             {
-                put(secondReviewerId, "Third reviewer is not a professor");
-                put(thirdReviewerId, "Second reviewer is not a professor");
+                put(secondReviewerId, "Second reviewer is not a professor");
+                put(thirdReviewerId, "Third reviewer is not a professor");
             }
         });
 
-        if (secondReviewerId == null || thirdReviewerId == null) {
-            map.forEach((id, errorMessage) -> {
-                if (id == null
-                        && !userRepository.hasRole(id == secondReviewerId ? thirdReviewerId : id, ERole.PROFESSOR)) {
-                    throw new GenericException(HttpStatus.BAD_REQUEST, errorMessage);
-                }
-            });
-        } else if (secondReviewerId.equals(thirdReviewerId)) {
-            throw new GenericException(HttpStatus.BAD_REQUEST, "The reviewers can't have the same id.");
-        } else {
-            map.forEach((id, errorMessage) -> {
-                if (!userRepository.hasRole(id, ERole.PROFESSOR)) {
-                    throw new GenericException(HttpStatus.BAD_REQUEST,
-                            map.get(id == secondReviewerId ? thirdReviewerId : secondReviewerId));
-                }
-            });
-        }
+        map.forEach((id, errorMessage) -> {
+            if (!userRepository.hasRole(id, ERole.PROFESSOR)) {
+                throw new GenericException(HttpStatus.BAD_REQUEST, errorMessage);
+            }
+        });
 
         return;
     }

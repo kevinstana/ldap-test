@@ -50,6 +50,7 @@ CREATE TABLE IF NOT EXISTS theses (
     description text not null,
     created_by bigint not null,
     created_at timestamp not null,
+    started_at timestamp,
     last_modified timestamp,
     last_modified_by bigint,
     professor_id bigint not null,
@@ -60,7 +61,6 @@ CREATE TABLE IF NOT EXISTS theses (
     professor_grade numeric(3, 1) check (professor_grade between 1 and 10),
     second_reviewer_grade numeric(3, 1) check (second_reviewer_grade between 1 and 10),
     third_reviewer_grade numeric(3, 1) check (third_reviewer_grade between 1 and 10),
-    views int,
     doc_link text,
 
     constraint fk_theses_created_by foreign key (created_by) references users (id),
@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS theses (
 
 
 -- Thesis status types and table
-create type thesis_status_type as enum ('DRAFT', 'AVAILABLE', 'IN_PROGRESS', 'PENDING_PRESENTATION', 'REVIEWED', 'PUBLISHED', 'CANCELLED');
+create type thesis_status_type as enum ('AVAILABLE', 'IN_PROGRESS', 'PENDING_PRESENTATION', 'PENDING_REVIEW', 'REVIEWED', 'PUBLISHED');
 
 create table if not exists thesis_status (
     id serial primary key,
@@ -84,11 +84,17 @@ alter table theses
 add constraint fk_thesis_status foreign key (status_id) references thesis_status(id);
 
 insert into thesis_status (status) values 
-    ('DRAFT'),
     ('AVAILABLE'),
     ('IN_PROGRESS'),
     ('PENDING_PRESENTATION'),
+    ('PENDING_REVIEW'),
     ('REVIEWED'),
-    ('PUBLISHED'),
-    ('CANCELLED')
+    ('PUBLISHED')
 on conflict do nothing;
+
+-- Courses table
+create table if not exists courses (
+    id bigserial primary key,
+    name varchar(255) unique not null,
+    url varchar(255) unique
+);
