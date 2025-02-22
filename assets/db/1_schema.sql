@@ -98,3 +98,12 @@ create table if not exists courses (
     name varchar(255) unique not null,
     url varchar(255) unique
 );
+
+create table if not exists course_theses (
+    course_id bigserial not null,
+    thesis_id bigserial not null,
+    primary key (course_id, thesis_id),
+    foreign key (course_id) references courses(id),
+    foreign key (thesis_id) references theses(id)
+);
+

@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gr.hua.it21774.requests.CreateThesisRequest;
+import gr.hua.it21774.responses.MessageRespone;
 import gr.hua.it21774.respository.ThesisRepository;
 import gr.hua.it21774.service.ThesisService;
 import jakarta.validation.Valid;
@@ -24,12 +25,12 @@ public class ThesisController {
     public ResponseEntity<?> createThesis(@Valid @RequestBody CreateThesisRequest request) {
         thesisService.handleThesisCreation(request);
 
-        return ResponseEntity.ok().body("Thesis created!");
+        return ResponseEntity.ok().body(new MessageRespone("Thesis Created!"));
     }
 
     @PutMapping("/theses")
     public ResponseEntity<?> updateThesis(@Valid @RequestBody CreateThesisRequest request) {
 
-        return ResponseEntity.ok().body("Thesis updated!");
+        return ResponseEntity.ok().body(new MessageRespone("Thesis Updated!"));
     }
 }

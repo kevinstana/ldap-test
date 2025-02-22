@@ -20,6 +20,14 @@ public class CommonUserDTO {
     public CommonUserDTO() {
     }
 
+
+    public CommonUserDTO(Long id, String username, String firstName, String lastName) {
+        this.id = id;
+        this.username = username;
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+
     public CommonUserDTO(Long id, String username, String email, String firstName, String lastName, Instant createdAt,
             ERole role,
             boolean isEnabled,

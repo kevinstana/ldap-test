@@ -64,19 +64,24 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/login/**", "/login-external/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/upload/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/download/{filename}").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/courses/**").permitAll()
+
+                        .requestMatchers(HttpMethod.POST, "/courses/**").hasAuthority("PROFESSOR")
 
                         .requestMatchers(HttpMethod.GET, "/users").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/users").hasAuthority("ADMIN")
 
                         .requestMatchers(HttpMethod.GET, "/external-users").hasAuthority("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/hua-users").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/external-users").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/external-users/me").hasAuthority("EXTERNAL")
                         .requestMatchers(HttpMethod.POST, "/external-users/{username}/change-password")
                         .hasAuthority("ADMIN")
 
+                        .requestMatchers(HttpMethod.GET, "/hua-users").hasAuthority("ADMIN")
+
                         .requestMatchers(HttpMethod.POST, "/theses").hasAuthority("PROFESSOR")
+
+
+                        .requestMatchers(HttpMethod.POST, "/assign-reviewers").permitAll()
 
                         .requestMatchers("/actuator/health/**").permitAll()
                         .anyRequest().authenticated())

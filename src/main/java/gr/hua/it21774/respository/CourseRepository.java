@@ -15,7 +15,7 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
     @Query("SELECT new gr.hua.it21774.dto.BasicCourseDTO(c.id, c.name) FROM Course c " +
             "WHERE c.name NOT IN :excludedNames " +
             "AND (" +
-            "    LOWER(TRANSLATE(c.name, 'ΆΈΉΊΌΎΏάέήίόύώ', 'ΑΕΗΙΟΥΩαεηιουω')) LIKE LOWER(TRANSLATE(CONCAT('%', :name, '%'), 'ΆΈΉΊΌΎΏάέήίόύώ', 'ΑΕΗΙΟΥΩαεηιουω')) "
+            "    LOWER(TRANSLATE(c.name, 'ΆΈΉΊΌΎΏάέήίόύώς', 'ΑΕΗΙΟΥΩαεηιουωσ')) LIKE LOWER(TRANSLATE(CONCAT('%', :name, '%'), 'ΆΈΉΊΌΎΏάέήίόύώς', 'ΑΕΗΙΟΥΩαεηιουωσ')) "
             +
             "    OR LOWER(c.name) LIKE LOWER(CONCAT('%', :englishName, '%')) " +
             ") " +

@@ -1,5 +1,7 @@
 package gr.hua.it21774.requests;
 
+import java.util.List;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -20,14 +22,14 @@ public class CreateThesisRequest {
     @NotBlank(message = "Third reviewer required")
     private String thirdReviewerId;
 
-    private String status;
+    private List<Long> recommendedCourses;
 
-    public CreateThesisRequest(String title, String description, String secondReviewerId, String thirdReviewerId, String status) {
+    public CreateThesisRequest(String title, String description, String secondReviewerId, String thirdReviewerId, List<Long> recommendedCourses) {
         this.title = title;
         this.description = description;
         this.secondReviewerId = secondReviewerId;
         this.thirdReviewerId = thirdReviewerId;
-        this.status = status;
+        this.recommendedCourses = recommendedCourses;
     }
 
     public String getTitle() {
@@ -62,11 +64,11 @@ public class CreateThesisRequest {
         this.thirdReviewerId = thirdReviewerId;
     }
 
-    public String getStatus() {
-        return status;
+    public List<Long> getRecommendedCourses() {
+        return recommendedCourses;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setRecommendedCourses(List<Long> recommendedCourses) {
+        this.recommendedCourses = recommendedCourses;
     }
 }

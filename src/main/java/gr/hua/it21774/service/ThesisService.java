@@ -18,21 +18,27 @@ import gr.hua.it21774.enums.ERole;
 import gr.hua.it21774.enums.EThesisStatus;
 import gr.hua.it21774.exceptions.GenericException;
 import gr.hua.it21774.requests.CreateThesisRequest;
+import gr.hua.it21774.respository.CourseThesisRepository;
 import gr.hua.it21774.respository.ThesisRepository;
 import gr.hua.it21774.respository.UserRepository;
 import gr.hua.it21774.userdetails.AppUserDetails;
+import jakarta.transaction.Transactional;
 
 @Service
 public class ThesisService {
 
     private final ThesisRepository thesisRepository;
     private final UserRepository userRepository;
+    private final CourseThesisRepository courseThesisRepository;
 
-    public ThesisService(ThesisRepository thesisRepository, UserRepository userRepository) {
+
+    public ThesisService(ThesisRepository thesisRepository, UserRepository userRepository, CourseThesisRepository courseThesisRepository) {
         this.thesisRepository = thesisRepository;
         this.userRepository = userRepository;
+        this.courseThesisRepository = courseThesisRepository;
     }
 
+    @Transactional
     public void handleThesisCreation(CreateThesisRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Long createdBy = ((AppUserDetails) authentication.getPrincipal()).getId();
@@ -59,10 +65,10 @@ public class ThesisService {
 
         Instant now = Instant.now();
         Thesis thesis = new Thesis(request.getTitle(), request.getDescription(), createdBy, now, now, null, createdBy,
-                createdBy, null, secondReviewerId, thirdReviewerId, statusId, null, null, null,
-                null, null);
+                createdBy, null, secondReviewerId, thirdReviewerId, statusId, null, null, null, null);
 
-        thesisRepository.save(thesis);
+        Thesis createdThesis = thesisRepository.save(thesis);
+        courseThesisRepository.saveCoursesForThesis(request.getRecommendedCourses(), createdThesis.getId());
     }
 
     private void validateReviewerPair(Long secondReviewerId, Long thirdReviewerId) {

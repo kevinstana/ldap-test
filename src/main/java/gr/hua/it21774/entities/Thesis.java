@@ -61,8 +61,6 @@ public class Thesis {
     @Column(name = "third_reviewer_grade")
     private Double thirdReviewerGrade;
 
-    private Integer views;
-
     @Column(name = "doc_link")
     private String docLink;
 
@@ -74,7 +72,7 @@ public class Thesis {
             Instant startedAt,
             Long lastModifiedBy, Long professorId, Long studentId, Long secondReviewerId,
             Long thirdReviewerId, Long statusId, Double professorGrade, Double secondReviewerGrade,
-            Double thirdReviewerGrade, Integer views, String docLink) {
+            Double thirdReviewerGrade, String docLink) {
         this.title = title;
         this.description = description;
         this.createdBy = createdBy;
@@ -90,7 +88,6 @@ public class Thesis {
         this.professorGrade = professorGrade;
         this.secondReviewerGrade = secondReviewerGrade;
         this.thirdReviewerGrade = thirdReviewerGrade;
-        this.views = views;
         this.docLink = docLink;
     }
 
@@ -220,14 +217,6 @@ public class Thesis {
 
     public void setThirdReviewerGrade(Double thirdReviewerGrade) {
         this.thirdReviewerGrade = thirdReviewerGrade;
-    }
-
-    public Integer getViews() {
-        return views;
-    }
-
-    public void setViews(Integer views) {
-        this.views = views;
     }
 
     public String getDocLink() {
