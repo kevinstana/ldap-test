@@ -5,14 +5,20 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import gr.hua.it21774.dto.DetailedThesisDTO;
+import gr.hua.it21774.dto.ThesisDTO;
 import gr.hua.it21774.entities.Thesis;
 import gr.hua.it21774.enums.ERole;
 import gr.hua.it21774.enums.EThesisStatus;
@@ -58,7 +64,7 @@ public class ThesisService {
         validateReviewerPair(secondReviewerId, thirdReviewerId);
 
         if (request.getDescription().isBlank()) {
-            request.setDescription("Pending description");
+            request.setDescription("[{\"type\":\"paragraph\",\"children\":[{\"text\":\"Pending Description\"}]}]");
         }
 
         Long statusId = thesisRepository.findIdByStatus(EThesisStatus.AVAILABLE).get();
@@ -91,5 +97,22 @@ public class ThesisService {
         });
 
         return;
+    }
+
+    public Page<ThesisDTO> getPagedTheses(Integer pageNumber, String pageSize, String query) {
+        Pageable pageable;
+
+        if (pageSize.equals("ALL")) {
+            pageable = Pageable.unpaged();
+        } else {
+            pageable = PageRequest.of(pageNumber, Integer.parseInt(pageSize));
+        }
+
+        return thesisRepository.customFindAll(pageable, query);
+    }
+
+    public DetailedThesisDTO getThesis(Long id) {
+        
+        return thesisRepository.findThesis(id);
     }
 }

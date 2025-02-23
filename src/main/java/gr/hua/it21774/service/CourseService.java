@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 
 import gr.hua.it21774.dto.BasicCourseDTO;
+import gr.hua.it21774.entities.Course;
 import gr.hua.it21774.respository.CourseRepository;
 
 @Service
@@ -16,6 +17,11 @@ public class CourseService {
 
     public CourseService(CourseRepository courseRepository) {
         this.courseRepository = courseRepository;
+    }
+
+    public List<Course> getThesisCourses(Long thesisId) {
+
+        return courseRepository.getThesisCourses(thesisId);
     }
 
     public List<BasicCourseDTO> searchCourses(String name, List<String> selectedCoures) {

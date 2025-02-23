@@ -30,7 +30,7 @@ INSERT INTO users (username, email, role_id, first_name, last_name, created_at, 
     ('student5', 'student5@test.com', 1, 'Student', 'Five', NOW(), true, NOW(), 1),
     
     ('professor1', 'professor1@test.com', 2, 'Professor', 'One', NOW(), true, NOW(), 1),
-    ('professor2', 'professor2@test.com', 2, 'Professor', 'Tow', NOW(), true, NOW(), 1),
+    ('professor2', 'professor2@test.com', 2, 'Professor', 'Two', NOW(), true, NOW(), 1),
     ('professor3', 'professor3@test.com', 2, 'Professor', 'Three', NOW(), true, NOW(), 1),
     ('professor4', 'professor4@test.com', 2, 'Professor', 'Four', NOW(), true, NOW(), 1),
     ('professor5', 'professor5@test.com', 2, 'Professor', 'Five', NOW(), true, NOW(), 1),

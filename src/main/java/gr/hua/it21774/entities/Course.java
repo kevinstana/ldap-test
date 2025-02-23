@@ -22,6 +22,13 @@ public class Course {
     public Course() {
     }
 
+    public Course(Long id, String name, String url) {
+        this.id = id;
+        this.name = name;
+        this.url = url;
+    }
+
+
     public Course(String name, String url) {
         this.name = name;
         this.url = url;
