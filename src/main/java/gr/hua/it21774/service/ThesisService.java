@@ -28,6 +28,7 @@ import gr.hua.it21774.respository.CourseThesisRepository;
 import gr.hua.it21774.respository.ThesisRepository;
 import gr.hua.it21774.respository.UserRepository;
 import gr.hua.it21774.userdetails.AppUserDetails;
+import io.jsonwebtoken.Claims;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -37,8 +38,8 @@ public class ThesisService {
     private final UserRepository userRepository;
     private final CourseThesisRepository courseThesisRepository;
 
-
-    public ThesisService(ThesisRepository thesisRepository, UserRepository userRepository, CourseThesisRepository courseThesisRepository) {
+    public ThesisService(ThesisRepository thesisRepository, UserRepository userRepository,
+            CourseThesisRepository courseThesisRepository) {
         this.thesisRepository = thesisRepository;
         this.userRepository = userRepository;
         this.courseThesisRepository = courseThesisRepository;
@@ -63,7 +64,8 @@ public class ThesisService {
         }
         validateReviewerPair(secondReviewerId, thirdReviewerId);
 
-        if (request.getDescription().isBlank()) {
+        if (request.getDescription().isBlank()
+                || request.getDescription().equals("[{\"type\":\"paragraph\",\"children\":[{\"text\":\"\"}]}]")) {
             request.setDescription("[{\"type\":\"paragraph\",\"children\":[{\"text\":\"Pending Description\"}]}]");
         }
 
@@ -112,7 +114,23 @@ public class ThesisService {
     }
 
     public DetailedThesisDTO getThesis(Long id) {
-        
+
         return thesisRepository.findThesis(id);
+    }
+
+    public Page<ThesisDTO> getMyPagedTheses(Integer pageNumber, String pageSize) {
+        Pageable pageable;
+
+        if (pageSize.equals("ALL")) {
+            pageable = Pageable.unpaged();
+        } else {
+            pageable = PageRequest.of(pageNumber, Integer.parseInt(pageSize));
+        }
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Claims accessTokenClaims = (Claims) authentication.getDetails();
+        Long professorId = Long.parseLong(accessTokenClaims.getSubject());
+
+        return thesisRepository.customFindAllByTeacherId(pageable, professorId);
     }
 }

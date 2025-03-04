@@ -68,6 +68,32 @@ public class ThesisController {
         return ResponseEntity.ok().body(theses);
     }
 
+    @GetMapping("/theses/me")
+    public ResponseEntity<?> getMyTheses(@RequestParam(required = false) String page,
+            @RequestParam(required = false) String size) {
+
+        List<String> validSizeValues = Arrays.asList("5", "10", "15", "20", "ALL");
+
+        Integer intPage = 0;
+        try {
+            intPage = Integer.parseInt(page);
+            if (intPage < 0) {
+                intPage = 0;
+            }
+        } catch (Exception e) {
+            intPage = 0;
+        }
+
+        if (size == null || !validSizeValues.contains(size)) {
+            size = "15";
+        }
+
+
+        Page<ThesisDTO> theses = thesisService.getMyPagedTheses(intPage, size);
+
+        return ResponseEntity.ok().body(theses);
+    }
+
     @GetMapping("/theses/{id}")
     public ResponseEntity<?> getThesis(@PathVariable Long id) {
 
