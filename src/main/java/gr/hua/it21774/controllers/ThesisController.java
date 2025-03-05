@@ -16,10 +16,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gr.hua.it21774.dto.DetailedThesisDTO;
 import gr.hua.it21774.dto.ThesisDTO;
+import gr.hua.it21774.entities.Course;
 import gr.hua.it21774.exceptions.GenericException;
 import gr.hua.it21774.requests.CreateThesisRequest;
+import gr.hua.it21774.requests.UpdateThesisRequest;
+import gr.hua.it21774.responses.DetailedThesisResponse;
 import gr.hua.it21774.responses.MessageRespone;
-import gr.hua.it21774.respository.ThesisRepository;
+import gr.hua.it21774.service.CourseService;
 import gr.hua.it21774.service.ThesisService;
 import jakarta.validation.Valid;
 
@@ -27,9 +30,12 @@ import jakarta.validation.Valid;
 public class ThesisController {
 
     private final ThesisService thesisService;
+    private final CourseService courseService;
 
-    public ThesisController(ThesisRepository thesisRepository, ThesisService thesisService) {
+    public ThesisController(ThesisService thesisService,
+            CourseService courseService) {
         this.thesisService = thesisService;
+        this.courseService = courseService;
     }
 
     @PostMapping("/theses")
@@ -88,7 +94,6 @@ public class ThesisController {
             size = "15";
         }
 
-
         Page<ThesisDTO> theses = thesisService.getMyPagedTheses(intPage, size);
 
         return ResponseEntity.ok().body(theses);
@@ -98,12 +103,23 @@ public class ThesisController {
     public ResponseEntity<?> getThesis(@PathVariable Long id) {
 
         DetailedThesisDTO thesis = thesisService.getThesis(id);
+        List<Course> recommendedCourses = courseService.getThesisCourses(id);
+
+        DetailedThesisResponse res = new DetailedThesisResponse(thesis, recommendedCourses);
 
         if (thesis == null) {
             throw new GenericException(HttpStatus.NOT_FOUND, "Thesis not found");
         }
 
-        return ResponseEntity.ok().body(thesis);
+        return ResponseEntity.ok().body(res);
+    }
+
+    @PutMapping("/theses/{id}")
+    public ResponseEntity<?> updateThesis(@PathVariable Long id, @Valid @RequestBody UpdateThesisRequest request) {
+
+        thesisService.updateThesis(id, request);
+
+        return ResponseEntity.ok().body(new MessageRespone("Thesis updated!"));
     }
 
     @PutMapping("/theses")

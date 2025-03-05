@@ -24,6 +24,7 @@ import gr.hua.it21774.enums.ERole;
 import gr.hua.it21774.enums.EThesisStatus;
 import gr.hua.it21774.exceptions.GenericException;
 import gr.hua.it21774.requests.CreateThesisRequest;
+import gr.hua.it21774.requests.UpdateThesisRequest;
 import gr.hua.it21774.respository.CourseThesisRepository;
 import gr.hua.it21774.respository.ThesisRepository;
 import gr.hua.it21774.respository.UserRepository;
@@ -132,5 +133,38 @@ public class ThesisService {
         Long professorId = Long.parseLong(accessTokenClaims.getSubject());
 
         return thesisRepository.customFindAllByTeacherId(pageable, professorId);
+    }
+
+    @Transactional
+    public void updateThesis(Long id, UpdateThesisRequest request) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long createdBy = ((AppUserDetails) authentication.getPrincipal()).getId();
+
+        Long secondReviewerId = Long.valueOf(request.getSecondReviewerId());
+        Long thirdReviewerId = Long.valueOf(request.getThirdReviewerId());
+
+        Set<Long> reviewerIds = new HashSet<Long>(
+                Arrays.asList(secondReviewerId, thirdReviewerId));
+        if (reviewerIds.contains(createdBy)) {
+            throw new GenericException(HttpStatus.BAD_REQUEST, "You can't assing yourself as an extra reviewer.");
+        }
+
+        Long tmpId = thesisRepository.findIdByTitle(request.getTitle()).orElse(0L);
+
+        if (tmpId != 0L && tmpId != id) {
+            throw new GenericException(HttpStatus.CONFLICT, "A thesis with this title already exists.");
+        }
+        validateReviewerPair(secondReviewerId, thirdReviewerId);
+
+        if (request.getDescription().isBlank()
+                || request.getDescription().equals("[{\"type\":\"paragraph\",\"children\":[{\"text\":\"\"}]}]")) {
+            request.setDescription("[{\"type\":\"paragraph\",\"children\":[{\"text\":\"Pending Description\"}]}]");
+        }
+
+        thesisRepository.deleteThesisCourseRelationships(id);
+        courseThesisRepository.saveCoursesForThesis(request.getRecommendedCourses(), id);
+
+        thesisRepository.updateThesisDetails(id, request.getTitle(), request.getDescription(), secondReviewerId,
+                thirdReviewerId);
     }
 }

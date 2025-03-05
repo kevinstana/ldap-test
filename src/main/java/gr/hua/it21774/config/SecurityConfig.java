@@ -79,7 +79,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/hua-users").hasAuthority("ADMIN")
 
                         .requestMatchers(HttpMethod.POST, "/theses").hasAuthority("PROFESSOR")
-
+                        .requestMatchers(HttpMethod.PUT, "/theses/{id}").hasAnyAuthority("PROFESSOR", "SECRETARY")
 
                         .requestMatchers(HttpMethod.POST, "/assign-reviewers").permitAll()
 

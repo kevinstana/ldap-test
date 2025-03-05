@@ -7,28 +7,41 @@ public class DetailedThesisDTO {
     private Long id;
     private String title;
     private String description;
-    private String professorFullName;
-    private String reviewer1FullName;
-    private String reviewer2FullName;
+
     private Long professorId;
+    private String professorFirstName;
+    private String professorLastName;
+
     private Long reviewer1Id;
+    private String reviewer1FirstName;
+    private String reviewer1LastName;
+
     private Long reviewer2Id;
+    private String reviewer2FirstName;
+    private String reviewer2LastName;
+
     private EThesisStatus status;
 
     public DetailedThesisDTO() {
     }
 
-    public DetailedThesisDTO(Long id, String title, String description, String professorFullName,
-            String reviewer1FullName, String reviewer2FullName, Long professorId, Long reviewer1Id, Long reviewer2Id, EThesisStatus status) {
+    public DetailedThesisDTO(Long id, String title, String description, 
+                             Long professorId, String professorFirstName, String professorLastName, 
+                             Long reviewer1Id, String reviewer1FirstName, String reviewer1LastName, 
+                             Long reviewer2Id, String reviewer2FirstName, String reviewer2LastName, 
+                             EThesisStatus status) {
         this.id = id;
         this.title = title;
         this.description = description;
-        this.professorFullName = professorFullName;
-        this.reviewer1FullName = reviewer1FullName;
-        this.reviewer2FullName = reviewer2FullName;
         this.professorId = professorId;
+        this.professorFirstName = professorFirstName;
+        this.professorLastName = professorLastName;
         this.reviewer1Id = reviewer1Id;
+        this.reviewer1FirstName = reviewer1FirstName;
+        this.reviewer1LastName = reviewer1LastName;
         this.reviewer2Id = reviewer2Id;
+        this.reviewer2FirstName = reviewer2FirstName;
+        this.reviewer2LastName = reviewer2LastName;
         this.status = status;
     }
 
@@ -56,36 +69,28 @@ public class DetailedThesisDTO {
         this.description = description;
     }
 
-    public String getProfessorFullName() {
-        return professorFullName;
-    }
-
-    public void setProfessorFullName(String professorFullName) {
-        this.professorFullName = professorFullName;
-    }
-
-    public String getReviewer1FullName() {
-        return reviewer1FullName;
-    }
-
-    public void setReviewer1FullName(String reviewer1FullName) {
-        this.reviewer1FullName = reviewer1FullName;
-    }
-
-    public String getReviewer2FullName() {
-        return reviewer2FullName;
-    }
-
-    public void setReviewer2FullName(String reviewer2FullName) {
-        this.reviewer2FullName = reviewer2FullName;
-    }
-
     public Long getProfessorId() {
         return professorId;
     }
 
     public void setProfessorId(Long professorId) {
         this.professorId = professorId;
+    }
+
+    public String getProfessorFirstName() {
+        return professorFirstName;
+    }
+
+    public void setProfessorFirstName(String professorFirstName) {
+        this.professorFirstName = professorFirstName;
+    }
+
+    public String getProfessorLastName() {
+        return professorLastName;
+    }
+
+    public void setProfessorLastName(String professorLastName) {
+        this.professorLastName = professorLastName;
     }
 
     public Long getReviewer1Id() {
@@ -96,12 +101,44 @@ public class DetailedThesisDTO {
         this.reviewer1Id = reviewer1Id;
     }
 
+    public String getReviewer1FirstName() {
+        return reviewer1FirstName;
+    }
+
+    public void setReviewer1FirstName(String reviewer1FirstName) {
+        this.reviewer1FirstName = reviewer1FirstName;
+    }
+
+    public String getReviewer1LastName() {
+        return reviewer1LastName;
+    }
+
+    public void setReviewer1LastName(String reviewer1LastName) {
+        this.reviewer1LastName = reviewer1LastName;
+    }
+
     public Long getReviewer2Id() {
         return reviewer2Id;
     }
 
     public void setReviewer2Id(Long reviewer2Id) {
         this.reviewer2Id = reviewer2Id;
+    }
+
+    public String getReviewer2FirstName() {
+        return reviewer2FirstName;
+    }
+
+    public void setReviewer2FirstName(String reviewer2FirstName) {
+        this.reviewer2FirstName = reviewer2FirstName;
+    }
+
+    public String getReviewer2LastName() {
+        return reviewer2LastName;
+    }
+
+    public void setReviewer2LastName(String reviewer2LastName) {
+        this.reviewer2LastName = reviewer2LastName;
     }
 
     public EThesisStatus getStatus() {

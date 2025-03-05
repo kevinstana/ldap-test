@@ -10,11 +10,11 @@ import gr.hua.it21774.service.MinioService;
 
 @RestController
 @RequestMapping
-public class FileController {
+public class MinioController {
 
     private final MinioService minioService;
 
-    public FileController(MinioService minioService) {
+    public MinioController(MinioService minioService) {
         this.minioService = minioService;
     }
 

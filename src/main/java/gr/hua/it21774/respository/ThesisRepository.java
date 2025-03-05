@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -40,12 +41,15 @@ public interface ThesisRepository extends JpaRepository<Thesis, Long> {
                         "t.id, " +
                         "t.title, " +
                         "t.description, " +
-                        "CONCAT(prof.firstName, ' ', prof.lastName), " +
-                        "CONCAT(rev1.firstName, ' ', rev1.lastName), " +
-                        "CONCAT(rev2.firstName, ' ', rev2.lastName), " +
                         "prof.id, " +
+                        "prof.firstName, " +
+                        "prof.lastName, " +
                         "rev1.id, " +
+                        "rev1.firstName, " +
+                        "rev1.lastName, " +
                         "rev2.id, " +
+                        "rev2.firstName, " +
+                        "rev2.lastName, " +
                         "ts.status) " +
                         "FROM Thesis t " +
                         "JOIN User prof ON prof.id = t.professorId " +
@@ -69,4 +73,17 @@ public interface ThesisRepository extends JpaRepository<Thesis, Long> {
                         "ORDER BY t.id ASC")
         Page<ThesisDTO> customFindAllByTeacherId(Pageable pageable, @Param("id") Long id);
 
+        @Modifying
+        @Query("DELETE FROM CourseTheses c WHERE c.thesisId = :thesisId")
+        void deleteThesisCourseRelationships(Long thesisId);
+
+        @Modifying
+        @Query("UPDATE Thesis t SET t.title = :title, t.description = :description, " +
+                        "t.secondReviewerId = :secondReviewerId, t.thirdReviewerId = :thirdReviewerId " +
+                        "WHERE t.id = :id")
+        void updateThesisDetails(Long id, String title, String description, Long secondReviewerId,
+                        Long thirdReviewerId);
+
+        @Query("SELECT t.id FROM Thesis t WHERE t.title = :title")
+        Optional<Long> findIdByTitle(String title);
 }
