@@ -33,7 +33,7 @@ public class LdapAuthService {
         Long roleId = roleRepository.findIdByRole(userDetails.getRole()).get();
 
         Instant now = Instant.now();
-        User newUser = new User(0L, userDetails,
+        User newUser = new User(userDetails,
                 now, true, roleId);
         userRepository.save(newUser);
 

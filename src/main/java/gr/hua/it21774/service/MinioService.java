@@ -18,13 +18,12 @@ public class MinioService {
 
     @Value("${minio.bucket-name}")
     private String bucketName;
-    private String folderName = "thesis-requests";
 
     public MinioService(MinioClient minioClient) {
         this.minioClient = minioClient;
     }
 
-    public void uploadFile(MultipartFile file) throws Exception {
+    public void uploadRequestFile(MultipartFile file, String folderName, String fileName) throws Exception {
         if (!minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build())) {
             minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucketName).build());
         }
@@ -32,7 +31,7 @@ public class MinioService {
         minioClient.putObject(
             PutObjectArgs.builder()
                 .bucket(bucketName)
-                .object(folderName + "/" + file.getOriginalFilename())
+                .object("thesis-requests/" + folderName + "/" + fileName)
                 .stream(file.getInputStream(), file.getSize(), -1)
                 .contentType(file.getContentType())
                 .build()

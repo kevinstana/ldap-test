@@ -1,5 +1,6 @@
 package gr.hua.it21774.respository;
 
+import java.time.Instant;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -79,11 +80,17 @@ public interface ThesisRepository extends JpaRepository<Thesis, Long> {
 
         @Modifying
         @Query("UPDATE Thesis t SET t.title = :title, t.description = :description, " +
-                        "t.secondReviewerId = :secondReviewerId, t.thirdReviewerId = :thirdReviewerId " +
+                        "t.secondReviewerId = :secondReviewerId, t.thirdReviewerId = :thirdReviewerId, t.lastModified = :lastModified " +
                         "WHERE t.id = :id")
         void updateThesisDetails(Long id, String title, String description, Long secondReviewerId,
-                        Long thirdReviewerId);
+                        Long thirdReviewerId, Instant lastModified);
 
         @Query("SELECT t.id FROM Thesis t WHERE t.title = :title")
         Optional<Long> findIdByTitle(String title);
+
+        @Query("SELECT COUNT(tr) > 0 FROM ThesisRequest tr WHERE tr.studentId = :studentId AND tr.thesisId = :thesisId")
+        Boolean hasMadeRequest(Long studentId, Long thesisId);        
+                
+        @Query("SELECT COUNT(t) > 0 FROM Thesis t WHERE t.studentId = :studentId")
+        Boolean canMakeRequest(Long studentId);
 }

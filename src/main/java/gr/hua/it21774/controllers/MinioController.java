@@ -18,15 +18,15 @@ public class MinioController {
         this.minioService = minioService;
     }
 
-    @PostMapping("/upload")
-    public String uploadFile(@RequestParam("file") MultipartFile file) {
-        try {
-            minioService.uploadFile(file);
-            return "File uploaded successfully!";
-        } catch (Exception e) {
-            return "Error: " + e.getMessage();
-        }
-    }
+    // @PostMapping("/upload")
+    // public String uploadFile(@RequestParam("file") MultipartFile file) {
+    //     try {
+    //         minioService.uploadFile(file);
+    //         return "File uploaded successfully!";
+    //     } catch (Exception e) {
+    //         return "Error: " + e.getMessage();
+    //     }
+    // }
 
     @GetMapping("/download/{filename}")
     public ResponseEntity<byte[]> downloadFile(@PathVariable String filename) {

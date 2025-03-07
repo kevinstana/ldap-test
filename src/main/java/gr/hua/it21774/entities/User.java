@@ -70,6 +70,19 @@ public class User {
         this.lastModified = now;
     }
 
+    public User(AppUserDetails userDetails,
+            Instant now,
+            Boolean isEnabled, Long roleId) {
+        this.username = userDetails.getUsername();
+        this.email = userDetails.getEmail();
+        this.firstName = userDetails.getFirstName();
+        this.lastName = userDetails.getLastName();
+        this.createdAt = now;
+        this.isEnabled = isEnabled;
+        this.roleId = roleId;
+        this.lastModified = now;
+    }
+
     // Not used somewhere at the moment
     public User(Long id, String username, String email, String firstName, String lastName,
             Instant createdAt, Instant lastModified, Long lastModifiedBy,

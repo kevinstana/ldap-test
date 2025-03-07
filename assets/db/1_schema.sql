@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS theses (
 
 
 -- Thesis status types and table
-create type thesis_status_type as enum ('AVAILABLE', 'IN_PROGRESS', 'PENDING_PRESENTATION', 'PENDING_REVIEW', 'REVIEWED', 'PUBLISHED');
+create type thesis_status_type as enum ('AVAILABLE', 'IN_PROGRESS', 'PENDING_REVIEW', 'REVIEWED', 'PUBLISHED');
 
 create table if not exists thesis_status (
     id serial primary key,
@@ -86,7 +86,6 @@ add constraint fk_thesis_status foreign key (status_id) references thesis_status
 insert into thesis_status (status) values 
     ('AVAILABLE'),
     ('IN_PROGRESS'),
-    ('PENDING_PRESENTATION'),
     ('PENDING_REVIEW'),
     ('REVIEWED'),
     ('PUBLISHED')
@@ -107,3 +106,54 @@ create table if not exists course_theses (
     foreign key (thesis_id) references theses(id)
 );
 
+-- Tasks
+create table if not exists tasks (
+    id bigserial primary key,
+    title varchar(255) unique not null,
+    description text,
+    status_id bigint not null
+);
+
+create type task_status_type as enum ('IN_PROGRESS', 'DONE');
+create table if not exists task_status (
+    id bigserial primary key,
+    status task_status_type not null
+);
+
+alter table tasks
+add constraint fk_task_status foreign key (status_id) references task_status(id);
+
+insert into task_status (status) values 
+    ('IN_PROGRESS'),
+    ('DONE')
+on conflict do nothing;
+
+-- Thesis Requests
+create type thesis_request_status_type as enum ('APPROVED', 'REJECTED');
+create table if not exists thesis_request_status (
+    id bigserial primary key,
+    status thesis_request_status_type not null
+);
+
+insert into thesis_request_status (status) values 
+    ('APPROVED'),
+    ('REJECTED')
+on conflict do nothing;
+
+create table if not exists thesis_requests (
+    id bigserial primary key,
+    student_id bigint not null,
+    thesis_id bigint not null,
+    description text not null,
+    pdf varchar(255) not null,
+    status_id bigint
+);
+
+alter table thesis_requests
+add constraint fk_request_status_id foreign key (status_id) references thesis_request_status(id);
+
+alter table thesis_requests
+add constraint fk_request_student_id foreign key (student_id) references users(id);
+
+alter table thesis_requests
+add constraint fk_request_thesis_id foreign key (thesis_id) references theses(id);
