@@ -144,6 +144,7 @@ public class ThesisController {
         }
 
         return ResponseEntity.ok().body(data);
+        // return ResponseEntity.ok().body(thesisService.test(id));
     }
 
     @PutMapping("/theses/{id}")

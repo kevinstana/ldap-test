@@ -20,16 +20,21 @@ public class DetailedThesisDTO {
     private String reviewer2FirstName;
     private String reviewer2LastName;
 
+    private Long studentId;
+    private String studentFirstName;
+    private String studentLastName;
+
     private EThesisStatus status;
 
     public DetailedThesisDTO() {
     }
 
-    public DetailedThesisDTO(Long id, String title, String description, 
-                             Long professorId, String professorFirstName, String professorLastName, 
-                             Long reviewer1Id, String reviewer1FirstName, String reviewer1LastName, 
-                             Long reviewer2Id, String reviewer2FirstName, String reviewer2LastName, 
-                             EThesisStatus status) {
+    public DetailedThesisDTO(Long id, String title, String description,
+            Long professorId, String professorFirstName, String professorLastName,
+            Long reviewer1Id, String reviewer1FirstName, String reviewer1LastName,
+            Long reviewer2Id, String reviewer2FirstName, String reviewer2LastName,
+            Long studentId, String studentFirstName, String studentLastName,
+            EThesisStatus status) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -42,6 +47,9 @@ public class DetailedThesisDTO {
         this.reviewer2Id = reviewer2Id;
         this.reviewer2FirstName = reviewer2FirstName;
         this.reviewer2LastName = reviewer2LastName;
+        this.studentId = studentId != null ? studentId : null;
+        this.studentFirstName = studentFirstName != null ? studentFirstName : null;
+        this.studentLastName = studentLastName != null ? studentLastName : null;
         this.status = status;
     }
 
@@ -139,6 +147,30 @@ public class DetailedThesisDTO {
 
     public void setReviewer2LastName(String reviewer2LastName) {
         this.reviewer2LastName = reviewer2LastName;
+    }
+
+    public Long getStudentId() {
+        return studentId;
+    }
+
+    public void setStudentId(Long studentId) {
+        this.studentId = studentId;
+    }
+
+    public String getStudentFirstName() {
+        return studentFirstName;
+    }
+
+    public void setStudentFirstName(String studentFirstName) {
+        this.studentFirstName = studentFirstName;
+    }
+
+    public String getStudentLastName() {
+        return studentLastName;
+    }
+
+    public void setStudentLastName(String studentLastName) {
+        this.studentLastName = studentLastName;
     }
 
     public EThesisStatus getStatus() {

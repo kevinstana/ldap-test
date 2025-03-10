@@ -6,10 +6,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -19,7 +18,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import gr.hua.it21774.config.AuthEntryPointJwt;
 import gr.hua.it21774.dto.DetailedThesisDTO;
 import gr.hua.it21774.dto.ThesisDTO;
 import gr.hua.it21774.dto.ThesisRequestsDTO;
@@ -50,8 +48,6 @@ public class ThesisService {
     private final UserRepository userRepository;
     private final CourseThesisRepository courseThesisRepository;
     private final MinioService minioService;
-
-    private static final Logger logger = LoggerFactory.getLogger(AuthEntryPointJwt.class);
 
     public ThesisService(ThesisRepository thesisRepository, ThesisRequestRepository thesisRequestRepository,
             ThesisRequestStatusRepository thesisRequestStatusRepository,
@@ -162,6 +158,14 @@ public class ThesisService {
         Long secondReviewerId = Long.valueOf(request.getSecondReviewerId());
         Long thirdReviewerId = Long.valueOf(request.getThirdReviewerId());
 
+        boolean isProfessor = authentication.getAuthorities().stream()
+                .anyMatch(auth -> "PROFESSOR".equals(auth.getAuthority()));
+
+        EThesisStatus currentStatus = thesisRepository.getThesisStatus(id);
+        if (currentStatus != EThesisStatus.AVAILABLE && isProfessor) {
+            throw new GenericException(HttpStatus.BAD_REQUEST, "Thesis needs to be available to be modified");
+        }
+
         Set<Long> reviewerIds = new HashSet<Long>(
                 Arrays.asList(secondReviewerId, thirdReviewerId));
         if (reviewerIds.contains(createdBy)) {
@@ -187,6 +191,7 @@ public class ThesisService {
                 thirdReviewerId, Instant.now());
     }
 
+    @Transactional(rollbackOn = Exception.class)
     public void saveThesisRequest(Long thesisId, String description, MultipartFile pdf) throws Exception {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Claims accessTokenClaims = (Claims) authentication.getDetails();
@@ -203,9 +208,9 @@ public class ThesisService {
         ThesisRequest thesisRequest = new ThesisRequest(0L, studentId, thesisId, description, pdfName, pdf.getSize(),
                 statusId, Instant.now());
 
-        thesisRequestRepository.save(thesisRequest);
-
         try {
+            thesisRequestRepository.save(thesisRequest);
+
             minioService.uploadRequestFile(pdf, folderName, pdfName);
         } catch (Exception e) {
             throw new GenericException(HttpStatus.BAD_REQUEST, "Something went wrong while uploading the request file");
@@ -239,7 +244,8 @@ public class ThesisService {
             thesisRepository.changeRequestStatus(approvedStatusId, requestId);
         }
 
-        thesisRepository.deleteOtherRequestsByStudent(request.getStudentId(), requestId);
+        Long invalidStatusId = thesisRequestStatusRepository.findIdByStatus(EThesisRequestStatus.INVALID).get();
+        thesisRepository.invalidateOtherRequestsByStudent(request.getStudentId(), requestId, invalidStatusId);
 
         Long rejectedStatusId = thesisRequestStatusRepository.findIdByStatus(EThesisRequestStatus.REJECTED).get();
         thesisRepository.rejectOtherRequests(requestId, request.getThesisId(), rejectedStatusId);
@@ -264,7 +270,8 @@ public class ThesisService {
         }
 
         Long statusId = 0L;
-        EThesisRequestStatus status = thesisRequestStatusRepository.findStatusByThesisRequestId(request.getRequestId()).get();
+        EThesisRequestStatus status = thesisRequestStatusRepository.findStatusByThesisRequestId(request.getRequestId())
+                .get();
         if (status == EThesisRequestStatus.PENDING) {
             throw new GenericException(HttpStatus.BAD_REQUEST, "You cannot undo a pending request");
         }
@@ -281,5 +288,9 @@ public class ThesisService {
             thesisRepository.changeRequestStatusByStudentId(request.getStudentId(), statusId);
         }
 
+    }
+
+    public Optional<Thesis> test(Long id) {
+        return thesisRepository.findById(id);
     }
 }

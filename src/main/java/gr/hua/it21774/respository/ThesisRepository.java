@@ -52,11 +52,15 @@ public interface ThesisRepository extends JpaRepository<Thesis, Long> {
                         "rev2.id, " +
                         "rev2.firstName, " +
                         "rev2.lastName, " +
+                        "stu.id, " +
+                        "stu.firstName, " +
+                        "stu.lastName, " +
                         "ts.status) " +
                         "FROM Thesis t " +
                         "JOIN User prof ON prof.id = t.professorId " +
                         "JOIN User rev1 ON rev1.id = t.secondReviewerId " +
                         "JOIN User rev2 ON rev2.id = t.thirdReviewerId " +
+                        "LEFT JOIN User stu ON stu.id = t.studentId " +
                         "JOIN ThesisStatus ts ON ts.id = t.statusId " +
                         "WHERE t.id = :id")
         DetailedThesisDTO findThesis(Long id);
@@ -113,8 +117,8 @@ public interface ThesisRepository extends JpaRepository<Thesis, Long> {
 
         @Transactional
         @Modifying
-        @Query("DELETE FROM ThesisRequest tr WHERE tr.studentId = :studentId AND tr.id <> :approvedRequestId")
-        void deleteOtherRequestsByStudent(Long studentId, Long approvedRequestId);
+        @Query("UPDATE ThesisRequest tr SET tr.statusId = :invalidatedStatusId WHERE tr.studentId = :studentId AND tr.id <> :approvedRequestId")
+        void invalidateOtherRequestsByStudent(Long studentId, Long approvedRequestId, Long invalidatedStatusId);        
 
         @Transactional
         @Modifying

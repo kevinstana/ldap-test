@@ -111,7 +111,16 @@ create table if not exists tasks (
     id bigserial primary key,
     title varchar(255) unique not null,
     description text,
+    thesis_id bigint not null,
+    created_at timestamp not null,
+    priority_id bigint not null,
     status_id bigint not null
+);
+
+create type task_priority_type as enum ('LOW', 'MEDIUM', 'HIGH');
+create table if not exists task_priority (
+    id bigserial primary key,
+    priority task_priority_type not null
 );
 
 create type task_status_type as enum ('IN_PROGRESS', 'DONE');
@@ -121,15 +130,27 @@ create table if not exists task_status (
 );
 
 alter table tasks
+add constraint fk_task_thesis_id foreign key (thesis_id) references theses(id);
+
+alter table tasks
 add constraint fk_task_status foreign key (status_id) references task_status(id);
+
+alter table tasks
+add constraint fk_task_priority foreign key (priority_id) references task_priority(id);
 
 insert into task_status (status) values 
     ('IN_PROGRESS'),
     ('DONE')
 on conflict do nothing;
 
+insert into task_priority (priority) values 
+    ('LOW'),
+    ('MEDIUM'),
+    ('HIGH')
+on conflict do nothing;
+
 -- Thesis Requests
-create type thesis_request_status_type as enum ('PENDING', 'APPROVED', 'REJECTED');
+create type thesis_request_status_type as enum ('PENDING', 'APPROVED', 'REJECTED', 'INVALID');
 create table if not exists thesis_request_status (
     id bigserial primary key,
     status thesis_request_status_type not null
@@ -138,7 +159,8 @@ create table if not exists thesis_request_status (
 insert into thesis_request_status (status) values 
     ('PENDING'),
     ('APPROVED'),
-    ('REJECTED')
+    ('REJECTED'),
+    ('INVALID')
 on conflict do nothing;
 
 create table if not exists thesis_requests (
