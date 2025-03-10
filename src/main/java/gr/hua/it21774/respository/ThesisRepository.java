@@ -15,6 +15,7 @@ import gr.hua.it21774.dto.DetailedThesisDTO;
 import gr.hua.it21774.dto.ThesisDTO;
 import gr.hua.it21774.entities.Thesis;
 import gr.hua.it21774.enums.EThesisStatus;
+import jakarta.transaction.Transactional;
 
 @Repository
 public interface ThesisRepository extends JpaRepository<Thesis, Long> {
@@ -80,7 +81,8 @@ public interface ThesisRepository extends JpaRepository<Thesis, Long> {
 
         @Modifying
         @Query("UPDATE Thesis t SET t.title = :title, t.description = :description, " +
-                        "t.secondReviewerId = :secondReviewerId, t.thirdReviewerId = :thirdReviewerId, t.lastModified = :lastModified " +
+                        "t.secondReviewerId = :secondReviewerId, t.thirdReviewerId = :thirdReviewerId, t.lastModified = :lastModified "
+                        +
                         "WHERE t.id = :id")
         void updateThesisDetails(Long id, String title, String description, Long secondReviewerId,
                         Long thirdReviewerId, Instant lastModified);
@@ -89,8 +91,46 @@ public interface ThesisRepository extends JpaRepository<Thesis, Long> {
         Optional<Long> findIdByTitle(String title);
 
         @Query("SELECT COUNT(tr) > 0 FROM ThesisRequest tr WHERE tr.studentId = :studentId AND tr.thesisId = :thesisId")
-        Boolean hasMadeRequest(Long studentId, Long thesisId);        
-                
+        Boolean hasMadeRequest(Long studentId, Long thesisId);
+
         @Query("SELECT COUNT(t) > 0 FROM Thesis t WHERE t.studentId = :studentId")
-        Boolean canMakeRequest(Long studentId);
+        Boolean hasStudentThesis(Long studentId);
+
+        @Transactional
+        @Modifying
+        @Query("UPDATE ThesisRequest tr SET tr.statusId = :statusId WHERE tr.id = :requestId")
+        void changeRequestStatus(Long statusId, Long requestId);
+
+        @Transactional
+        @Modifying
+        @Query("UPDATE ThesisRequest tr SET tr.statusId = :statusId WHERE tr.thesisId = :thesisId")
+        void changeAllThesisRequestStatus(Long thesisId, Long statusId);
+
+        @Transactional
+        @Modifying
+        @Query("UPDATE ThesisRequest tr SET tr.statusId = :statusId WHERE tr.studentId = :studentId")
+        void changeRequestStatusByStudentId(Long studentId, Long statusId);
+
+        @Transactional
+        @Modifying
+        @Query("DELETE FROM ThesisRequest tr WHERE tr.studentId = :studentId AND tr.id <> :approvedRequestId")
+        void deleteOtherRequestsByStudent(Long studentId, Long approvedRequestId);
+
+        @Transactional
+        @Modifying
+        @Query("UPDATE ThesisRequest tr SET tr.statusId = :rejectedStatusId WHERE tr.thesisId = :thesisId AND tr.id <> :requestId")
+        void rejectOtherRequests(Long requestId, Long thesisId, Long rejectedStatusId);
+
+        @Transactional
+        @Modifying
+        @Query("UPDATE Thesis t SET t.statusId = :inProgressStatusId, t.studentId = :studentId WHERE t.id = :thesisId")
+        void updateThesisStatus(Long thesisId, Long studentId, Long inProgressStatusId);
+
+        @Query("SELECT ts.status FROM Thesis t " +
+                        "JOIN ThesisStatus ts ON ts.id = t.statusId " +
+                        "WHERE t.id = :thesisId")
+        EThesisStatus getThesisStatus(Long thesisId);
+
+
+
 }

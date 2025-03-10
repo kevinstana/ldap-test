@@ -129,13 +129,14 @@ insert into task_status (status) values
 on conflict do nothing;
 
 -- Thesis Requests
-create type thesis_request_status_type as enum ('APPROVED', 'REJECTED');
+create type thesis_request_status_type as enum ('PENDING', 'APPROVED', 'REJECTED');
 create table if not exists thesis_request_status (
     id bigserial primary key,
     status thesis_request_status_type not null
 );
 
 insert into thesis_request_status (status) values 
+    ('PENDING'),
     ('APPROVED'),
     ('REJECTED')
 on conflict do nothing;
@@ -146,7 +147,9 @@ create table if not exists thesis_requests (
     thesis_id bigint not null,
     description text not null,
     pdf varchar(255) not null,
-    status_id bigint
+    pdf_size bigint not null,
+    status_id bigint,
+    created_at timestamp not null
 );
 
 alter table thesis_requests

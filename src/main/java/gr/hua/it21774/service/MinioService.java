@@ -38,11 +38,11 @@ public class MinioService {
         );
     }
 
-    public InputStream downloadFile(String fileName) throws Exception {
+    public InputStream downloadRequestFile(String folderName, String fileName) throws Exception {
         return minioClient.getObject(
             GetObjectArgs.builder()
                 .bucket(bucketName)
-                .object(fileName)
+                .object("thesis-requests/" + folderName + "/" + fileName)
                 .build()
         );
     }

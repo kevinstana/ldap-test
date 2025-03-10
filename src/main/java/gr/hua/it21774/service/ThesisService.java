@@ -8,6 +8,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,18 +19,23 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import gr.hua.it21774.config.AuthEntryPointJwt;
 import gr.hua.it21774.dto.DetailedThesisDTO;
 import gr.hua.it21774.dto.ThesisDTO;
+import gr.hua.it21774.dto.ThesisRequestsDTO;
 import gr.hua.it21774.entities.Thesis;
 import gr.hua.it21774.entities.ThesisRequest;
 import gr.hua.it21774.enums.ERole;
+import gr.hua.it21774.enums.EThesisRequestStatus;
 import gr.hua.it21774.enums.EThesisStatus;
 import gr.hua.it21774.exceptions.GenericException;
+import gr.hua.it21774.requests.AssignStudentRequest;
 import gr.hua.it21774.requests.CreateThesisRequest;
 import gr.hua.it21774.requests.UpdateThesisRequest;
 import gr.hua.it21774.respository.CourseThesisRepository;
 import gr.hua.it21774.respository.ThesisRepository;
 import gr.hua.it21774.respository.ThesisRequestRepository;
+import gr.hua.it21774.respository.ThesisRequestStatusRepository;
 import gr.hua.it21774.respository.UserRepository;
 import gr.hua.it21774.userdetails.AppUserDetails;
 import io.jsonwebtoken.Claims;
@@ -39,15 +46,20 @@ public class ThesisService {
 
     private final ThesisRepository thesisRepository;
     private final ThesisRequestRepository thesisRequestRepository;
+    private final ThesisRequestStatusRepository thesisRequestStatusRepository;
     private final UserRepository userRepository;
     private final CourseThesisRepository courseThesisRepository;
     private final MinioService minioService;
 
+    private static final Logger logger = LoggerFactory.getLogger(AuthEntryPointJwt.class);
+
     public ThesisService(ThesisRepository thesisRepository, ThesisRequestRepository thesisRequestRepository,
+            ThesisRequestStatusRepository thesisRequestStatusRepository,
             UserRepository userRepository,
             CourseThesisRepository courseThesisRepository, MinioService minioService) {
         this.thesisRepository = thesisRepository;
         this.thesisRequestRepository = thesisRequestRepository;
+        this.thesisRequestStatusRepository = thesisRequestStatusRepository;
         this.userRepository = userRepository;
         this.courseThesisRepository = courseThesisRepository;
         this.minioService = minioService;
@@ -185,7 +197,11 @@ public class ThesisService {
         String folderName = "thesis-" + thesisId;
         String pdfName = username + ".pdf";
 
-        ThesisRequest thesisRequest = new ThesisRequest(0L, studentId, thesisId, description, pdfName, null);
+        Long statusId = thesisRequestStatusRepository.findIdByStatus(EThesisRequestStatus.PENDING)
+                .orElseThrow(() -> new GenericException(HttpStatus.BAD_REQUEST, "Thesis Request Status not found"));
+
+        ThesisRequest thesisRequest = new ThesisRequest(0L, studentId, thesisId, description, pdfName, pdf.getSize(),
+                statusId, Instant.now());
 
         thesisRequestRepository.save(thesisRequest);
 
@@ -196,11 +212,74 @@ public class ThesisService {
         }
     }
 
-    public boolean canMakeRequest(Long studentId) {
-        return !thesisRepository.canMakeRequest(studentId);
+    public boolean canMakeRequest(Long studentId, Long thesisId) {
+        Boolean canMakeRequest = (!thesisRepository.hasStudentThesis(studentId)
+                && (thesisRepository.getThesisStatus(thesisId) == EThesisStatus.AVAILABLE));
+
+        return canMakeRequest;
     }
 
     public boolean hasMadeRequest(Long studentId, Long thesisId) {
         return thesisRepository.hasMadeRequest(studentId, thesisId);
+    }
+
+    public Page<ThesisRequestsDTO> getThesisRequests(Integer pageNumber, Integer pageSize, Long thesisId) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+
+        return thesisRequestRepository.getThesisRequests(pageable, thesisId);
+    }
+
+    @Transactional
+    public void assignStudent(AssignStudentRequest request) {
+
+        Long approvedStatusId = 0L;
+        Long requestId = request.getRequestId();
+        if (request.getRequestId() > 0L) {
+            approvedStatusId = thesisRequestStatusRepository.findIdByStatus(EThesisRequestStatus.APPROVED).get();
+            thesisRepository.changeRequestStatus(approvedStatusId, requestId);
+        }
+
+        thesisRepository.deleteOtherRequestsByStudent(request.getStudentId(), requestId);
+
+        Long rejectedStatusId = thesisRequestStatusRepository.findIdByStatus(EThesisRequestStatus.REJECTED).get();
+        thesisRepository.rejectOtherRequests(requestId, request.getThesisId(), rejectedStatusId);
+
+        Long inProgressStatusId = thesisRepository.findIdByStatus(EThesisStatus.IN_PROGRESS).get();
+        thesisRepository.updateThesisStatus(request.getThesisId(), request.getStudentId(), inProgressStatusId);
+    }
+
+    @Transactional
+    public void rejectRequest(Long requestId) {
+        Long rejectedStatusId = thesisRequestStatusRepository.findIdByStatus(EThesisRequestStatus.REJECTED).get();
+        thesisRequestRepository.rejectRequest(requestId, rejectedStatusId);
+    }
+
+    @Transactional
+    public void undoThesisRequestAction(AssignStudentRequest request) {
+
+        // try {
+
+        if (thesisRepository.getThesisStatus(request.getThesisId()) != EThesisStatus.AVAILABLE) {
+            throw new GenericException(HttpStatus.BAD_REQUEST, "You can only undo a request on an available thesis");
+        }
+
+        Long statusId = 0L;
+        EThesisRequestStatus status = thesisRequestStatusRepository.findStatusByThesisRequestId(request.getRequestId()).get();
+        if (status == EThesisRequestStatus.PENDING) {
+            throw new GenericException(HttpStatus.BAD_REQUEST, "You cannot undo a pending request");
+        }
+
+        if (status == EThesisRequestStatus.REJECTED) {
+            statusId = thesisRequestStatusRepository.findIdByStatus(EThesisRequestStatus.PENDING).get();
+            thesisRepository.changeRequestStatus(statusId, request.getRequestId());
+            return;
+        }
+
+        if (status == EThesisRequestStatus.APPROVED) {
+            statusId = thesisRequestStatusRepository.findIdByStatus(EThesisRequestStatus.PENDING).get();
+            thesisRepository.changeAllThesisRequestStatus(request.getThesisId(), statusId);
+            thesisRepository.changeRequestStatusByStudentId(request.getStudentId(), statusId);
+        }
+
     }
 }
