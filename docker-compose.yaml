@@ -48,11 +48,6 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/it21774
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=password
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9090/api/actuator/health"]
-      interval: 5s
-      timeout: 5s
-      retries: 2
     networks:
       - demo_network
   front:
