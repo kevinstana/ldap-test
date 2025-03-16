@@ -26,7 +26,7 @@ public class Task {
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
-    @Column(name = "priotiry_id")
+    @Column(name = "priority_id")
     private Long priorityId;
 
     @Column(name = "status_id")

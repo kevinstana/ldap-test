@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.data.domain.Page;
@@ -16,13 +15,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import gr.hua.it21774.dto.DetailedThesisDTO;
 import gr.hua.it21774.dto.ThesisDTO;
-import gr.hua.it21774.dto.ThesisRequestsDTO;
 import gr.hua.it21774.entities.Thesis;
-import gr.hua.it21774.entities.ThesisRequest;
 import gr.hua.it21774.enums.ERole;
 import gr.hua.it21774.enums.EThesisRequestStatus;
 import gr.hua.it21774.enums.EThesisStatus;
@@ -47,18 +43,16 @@ public class ThesisService {
     private final ThesisRequestStatusRepository thesisRequestStatusRepository;
     private final UserRepository userRepository;
     private final CourseThesisRepository courseThesisRepository;
-    private final MinioService minioService;
 
     public ThesisService(ThesisRepository thesisRepository, ThesisRequestRepository thesisRequestRepository,
             ThesisRequestStatusRepository thesisRequestStatusRepository,
             UserRepository userRepository,
-            CourseThesisRepository courseThesisRepository, MinioService minioService) {
+            CourseThesisRepository courseThesisRepository) {
         this.thesisRepository = thesisRepository;
         this.thesisRequestRepository = thesisRequestRepository;
         this.thesisRequestStatusRepository = thesisRequestStatusRepository;
         this.userRepository = userRepository;
         this.courseThesisRepository = courseThesisRepository;
-        this.minioService = minioService;
     }
 
     @Transactional
@@ -191,32 +185,6 @@ public class ThesisService {
                 thirdReviewerId, Instant.now());
     }
 
-    @Transactional(rollbackOn = Exception.class)
-    public void saveThesisRequest(Long thesisId, String description, MultipartFile pdf) throws Exception {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Claims accessTokenClaims = (Claims) authentication.getDetails();
-
-        Long studentId = Long.parseLong(accessTokenClaims.getSubject());
-        String username = accessTokenClaims.get("username", String.class);
-
-        String folderName = "thesis-" + thesisId;
-        String pdfName = username + ".pdf";
-
-        Long statusId = thesisRequestStatusRepository.findIdByStatus(EThesisRequestStatus.PENDING)
-                .orElseThrow(() -> new GenericException(HttpStatus.BAD_REQUEST, "Thesis Request Status not found"));
-
-        ThesisRequest thesisRequest = new ThesisRequest(0L, studentId, thesisId, description, pdfName, pdf.getSize(),
-                statusId, Instant.now());
-
-        try {
-            thesisRequestRepository.save(thesisRequest);
-
-            minioService.uploadRequestFile(pdf, folderName, pdfName);
-        } catch (Exception e) {
-            throw new GenericException(HttpStatus.BAD_REQUEST, "Something went wrong while uploading the request file");
-        }
-    }
-
     public boolean canMakeRequest(Long studentId, Long thesisId) {
         Boolean canMakeRequest = (!thesisRepository.hasStudentThesis(studentId)
                 && (thesisRepository.getThesisStatus(thesisId) == EThesisStatus.AVAILABLE));
@@ -226,12 +194,6 @@ public class ThesisService {
 
     public boolean hasMadeRequest(Long studentId, Long thesisId) {
         return thesisRepository.hasMadeRequest(studentId, thesisId);
-    }
-
-    public Page<ThesisRequestsDTO> getThesisRequests(Integer pageNumber, Integer pageSize, Long thesisId) {
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
-
-        return thesisRequestRepository.getThesisRequests(pageable, thesisId);
     }
 
     @Transactional
@@ -263,8 +225,6 @@ public class ThesisService {
     @Transactional
     public void undoThesisRequestAction(AssignStudentRequest request) {
 
-        // try {
-
         if (thesisRepository.getThesisStatus(request.getThesisId()) != EThesisStatus.AVAILABLE) {
             throw new GenericException(HttpStatus.BAD_REQUEST, "You can only undo a request on an available thesis");
         }
@@ -288,9 +248,5 @@ public class ThesisService {
             thesisRepository.changeRequestStatusByStudentId(request.getStudentId(), statusId);
         }
 
-    }
-
-    public Optional<Thesis> test(Long id) {
-        return thesisRepository.findById(id);
     }
 }

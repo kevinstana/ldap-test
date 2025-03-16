@@ -149,6 +149,15 @@ insert into task_priority (priority) values
     ('HIGH')
 on conflict do nothing;
 
+-- Task Files
+create table if not exists task_files (
+    id bigserial not null,
+    filename varchar(255) not null,
+    filesize bigint not null,
+    task_id bigserial not null,
+    foreign key (task_id) references tasks(id)
+);
+
 -- Thesis Requests
 create type thesis_request_status_type as enum ('PENDING', 'APPROVED', 'REJECTED', 'INVALID');
 create table if not exists thesis_request_status (
