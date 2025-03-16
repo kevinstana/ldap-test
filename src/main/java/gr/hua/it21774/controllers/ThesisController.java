@@ -161,4 +161,20 @@ public class ThesisController {
         thesisService.rejectRequest(request.getRequestId());
         return ResponseEntity.ok().body(new MessageRespone("Request rejected"));
     }
+
+    @GetMapping("/theses/my-assignment")
+    public ResponseEntity<?> myAssignment() {
+
+        DetailedThesisDTO myAssignment = thesisService.getMyAssignment();
+
+        if (myAssignment == null) {
+            throw new GenericException(HttpStatus.BAD_REQUEST, "No assigned thesis found");
+        }
+
+        List<Course> recommendedCourses = courseService.getThesisCourses(myAssignment.getId());
+
+        DetailedThesisResponse data = new DetailedThesisResponse(myAssignment, recommendedCourses, null, null);
+
+        return ResponseEntity.ok().body(data);
+    }
 }

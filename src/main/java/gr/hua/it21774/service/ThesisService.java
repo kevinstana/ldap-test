@@ -249,4 +249,13 @@ public class ThesisService {
         }
 
     }
+
+    public DetailedThesisDTO getMyAssignment() {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Claims accessTokenClaims = (Claims) authentication.getDetails();
+        Long studentId = Long.parseLong(accessTokenClaims.getSubject());
+
+        return thesisRepository.getMyAssignment(studentId);
+    }
 }

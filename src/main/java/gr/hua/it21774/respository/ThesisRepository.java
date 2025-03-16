@@ -118,7 +118,7 @@ public interface ThesisRepository extends JpaRepository<Thesis, Long> {
         @Transactional
         @Modifying
         @Query("UPDATE ThesisRequest tr SET tr.statusId = :invalidatedStatusId WHERE tr.studentId = :studentId AND tr.id <> :approvedRequestId")
-        void invalidateOtherRequestsByStudent(Long studentId, Long approvedRequestId, Long invalidatedStatusId);        
+        void invalidateOtherRequestsByStudent(Long studentId, Long approvedRequestId, Long invalidatedStatusId);
 
         @Transactional
         @Modifying
@@ -135,6 +135,29 @@ public interface ThesisRepository extends JpaRepository<Thesis, Long> {
                         "WHERE t.id = :thesisId")
         EThesisStatus getThesisStatus(Long thesisId);
 
-
-
+        @Query("SELECT new gr.hua.it21774.dto.DetailedThesisDTO(" +
+                        "t.id, " +
+                        "t.title, " +
+                        "t.description, " +
+                        "prof.id, " +
+                        "prof.firstName, " +
+                        "prof.lastName, " +
+                        "rev1.id, " +
+                        "rev1.firstName, " +
+                        "rev1.lastName, " +
+                        "rev2.id, " +
+                        "rev2.firstName, " +
+                        "rev2.lastName, " +
+                        "stu.id, " +
+                        "stu.firstName, " +
+                        "stu.lastName, " +
+                        "ts.status) " +
+                        "FROM Thesis t " +
+                        "JOIN User prof ON prof.id = t.professorId " +
+                        "JOIN User rev1 ON rev1.id = t.secondReviewerId " +
+                        "JOIN User rev2 ON rev2.id = t.thirdReviewerId " +
+                        "LEFT JOIN User stu ON stu.id = t.studentId " +
+                        "JOIN ThesisStatus ts ON ts.id = t.statusId " +
+                        "WHERE t.studentId = :id")
+        DetailedThesisDTO getMyAssignment(Long id);
 }
