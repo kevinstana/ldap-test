@@ -1,7 +1,9 @@
 package gr.hua.it21774.controllers;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -19,6 +21,8 @@ import org.springframework.web.bind.annotation.RestController;
 import gr.hua.it21774.dto.DetailedThesisDTO;
 import gr.hua.it21774.dto.ThesisDTO;
 import gr.hua.it21774.entities.Course;
+import gr.hua.it21774.enums.ERole;
+import gr.hua.it21774.enums.EThesisStatus;
 import gr.hua.it21774.exceptions.GenericException;
 import gr.hua.it21774.requests.AssignStudentRequest;
 import gr.hua.it21774.requests.CreateThesisRequest;
@@ -51,7 +55,8 @@ public class ThesisController {
 
     @GetMapping("/theses")
     public ResponseEntity<?> getTheses(@RequestParam(required = false) String page,
-            @RequestParam(required = false) String size, @RequestParam(required = false) String query) {
+            @RequestParam(required = false) String size, @RequestParam(required = false) List<String> statuses,
+            @RequestParam(required = false) String query) {
 
         List<String> validSizeValues = Arrays.asList("5", "10", "15", "20", "ALL");
 
@@ -73,7 +78,20 @@ public class ThesisController {
             query = "";
         }
 
-        Page<ThesisDTO> theses = thesisService.getPagedTheses(intPage, size, query);
+        List<EThesisStatus> validStatuses = new ArrayList<>();
+
+        if (statuses != null) {
+            for (String role : statuses) {
+                try {
+                    validStatuses.add(EThesisStatus.valueOf(role.toUpperCase()));
+                } catch (IllegalArgumentException e) {
+                }
+            }
+        }
+
+        List<EThesisStatus> statusesToQuery = validStatuses.isEmpty() ? null : validStatuses;
+
+        Page<ThesisDTO> theses = thesisService.getPagedTheses(intPage, size, query, statusesToQuery);
 
         return ResponseEntity.ok().body(theses);
     }
@@ -177,4 +195,12 @@ public class ThesisController {
 
         return ResponseEntity.ok().body(data);
     }
+
+    @GetMapping("/theses/search")
+    public ResponseEntity<?> test(@RequestParam(required = false) String query) {
+        List<String> data = thesisService.searchTheses(query);
+
+        return ResponseEntity.ok().body(data);
+    }
+
 }

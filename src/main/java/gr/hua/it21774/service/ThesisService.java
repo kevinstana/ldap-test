@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -111,7 +112,8 @@ public class ThesisService {
         return;
     }
 
-    public Page<ThesisDTO> getPagedTheses(Integer pageNumber, String pageSize, String query) {
+    public Page<ThesisDTO> getPagedTheses(Integer pageNumber, String pageSize, String query,
+            List<EThesisStatus> statuses) {
         Pageable pageable;
 
         if (pageSize.equals("ALL")) {
@@ -120,7 +122,7 @@ public class ThesisService {
             pageable = PageRequest.of(pageNumber, Integer.parseInt(pageSize));
         }
 
-        return thesisRepository.customFindAll(pageable, query);
+        return thesisRepository.customFindAll(pageable, query, statuses);
     }
 
     public DetailedThesisDTO getThesis(Long id) {
@@ -257,5 +259,12 @@ public class ThesisService {
         Long studentId = Long.parseLong(accessTokenClaims.getSubject());
 
         return thesisRepository.getMyAssignment(studentId);
+    }
+
+    public List<String> searchTheses(String query) {
+
+        PageRequest pageRequest = PageRequest.of(0, 5);
+
+        return thesisRepository.searchTheses(query, pageRequest);
     }
 }

@@ -1,6 +1,7 @@
 package gr.hua.it21774.respository;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -35,9 +36,12 @@ public interface ThesisRepository extends JpaRepository<Thesis, Long> {
                         "FROM Thesis t " +
                         "JOIN User u ON u.id = t.professorId " +
                         "JOIN ThesisStatus ts ON ts.id = t.statusId " +
-                        "WHERE (:query IS NULL OR LOWER(t.title) LIKE LOWER(CONCAT('%', :query, '%'))) " +
+                        "WHERE (:query IS NULL OR " +
+                        "      LOWER(t.title) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+                        "      LOWER(CONCAT(u.firstName, ' ', u.lastName)) LIKE LOWER(CONCAT('%', :query, '%'))) " +
+                        "AND (:statuses IS NULL OR ts.status IN :statuses) " +
                         "ORDER BY t.id ASC")
-        Page<ThesisDTO> customFindAll(Pageable pageable, @Param("query") String query);
+        Page<ThesisDTO> customFindAll(Pageable pageable, @Param("query") String query, List<EThesisStatus> statuses);
 
         @Query("SELECT new gr.hua.it21774.dto.DetailedThesisDTO(" +
                         "t.id, " +
@@ -160,4 +164,16 @@ public interface ThesisRepository extends JpaRepository<Thesis, Long> {
                         "JOIN ThesisStatus ts ON ts.id = t.statusId " +
                         "WHERE t.studentId = :id")
         DetailedThesisDTO getMyAssignment(Long id);
+
+        @Query("SELECT DISTINCT CASE " +
+                        "WHEN LOWER(t.title) LIKE LOWER(CONCAT('%', :query, '%')) " +
+                        "THEN t.title " +
+                        "ELSE CONCAT(prof.firstName, ' ', prof.lastName) " +
+                        "END " +
+                        "FROM Thesis t " +
+                        "JOIN User prof ON prof.id = t.professorId " +
+                        "WHERE LOWER(t.title) LIKE LOWER(CONCAT('%', :query, '%')) " +
+                        "OR LOWER(CONCAT(prof.firstName, ' ', prof.lastName)) LIKE LOWER(CONCAT('%', :query, '%')) ")
+        List<String> searchTheses(String query, Pageable pageable);
+
 }
