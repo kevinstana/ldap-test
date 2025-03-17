@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -203,4 +204,11 @@ public class ThesisController {
         return ResponseEntity.ok().body(data);
     }
 
+    @DeleteMapping("/theses/{id}")
+    public ResponseEntity<?> deleteThesis(@PathVariable Long id) throws Exception {
+
+        thesisService.deleteTheses(id);
+
+        return ResponseEntity.ok().body(new MessageRespone("Thesis deleted"));
+    }
 }

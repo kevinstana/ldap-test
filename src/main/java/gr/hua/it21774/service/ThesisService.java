@@ -44,16 +44,18 @@ public class ThesisService {
     private final ThesisRequestStatusRepository thesisRequestStatusRepository;
     private final UserRepository userRepository;
     private final CourseThesisRepository courseThesisRepository;
+    private final MinioService minioService;
 
     public ThesisService(ThesisRepository thesisRepository, ThesisRequestRepository thesisRequestRepository,
             ThesisRequestStatusRepository thesisRequestStatusRepository,
             UserRepository userRepository,
-            CourseThesisRepository courseThesisRepository) {
+            CourseThesisRepository courseThesisRepository, MinioService minioService) {
         this.thesisRepository = thesisRepository;
         this.thesisRequestRepository = thesisRequestRepository;
         this.thesisRequestStatusRepository = thesisRequestStatusRepository;
         this.userRepository = userRepository;
         this.courseThesisRepository = courseThesisRepository;
+        this.minioService = minioService;
     }
 
     @Transactional
@@ -266,5 +268,23 @@ public class ThesisService {
         PageRequest pageRequest = PageRequest.of(0, 5);
 
         return thesisRepository.searchTheses(query, pageRequest);
+    }
+
+    @Transactional(rollbackOn = Exception.class)
+    public void deleteTheses(Long thesisId) throws Exception {
+
+        try {
+
+            EThesisStatus status = thesisRepository.getThesisStatus(thesisId);
+
+            if (status.equals(EThesisStatus.AVAILABLE)) {
+                courseThesisRepository.deleteCoursesByThesisId(thesisId);
+                minioService.deleteAllFilesInFolder("theses-requests", "thesis-" + thesisId);
+                thesisRequestRepository.deleteRequestsByThesisId(thesisId);
+                thesisRepository.deleteById(thesisId);
+            }
+        } catch (Exception e) {
+            throw new GenericException(HttpStatus.BAD_REQUEST, "Something went wrong");
+        }
     }
 }

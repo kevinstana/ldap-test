@@ -37,4 +37,9 @@ public interface ThesisRequestRepository extends JpaRepository<ThesisRequest, Lo
     @Modifying
     @Query("UPDATE ThesisRequest tr SET tr.statusId = :rejectedStatusId WHERE tr.id = :requestId")
     void rejectRequest(Long requestId, Long rejectedStatusId);
+
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM thesis_requests WHERE thesis_id = :thesisId", nativeQuery = true)
+    void deleteRequestsByThesisId(Long thesisId);
 }

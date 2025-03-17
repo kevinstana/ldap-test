@@ -20,4 +20,9 @@ public interface CourseThesisRepository extends JpaRepository<CourseTheses, Long
     default void saveCoursesForThesis(List<Long> courseIds, Long thesisId) {
         courseIds.forEach(courseId -> saveCourseThesis(courseId, thesisId));
     }
+
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM course_theses WHERE thesis_id = :thesisId", nativeQuery = true)
+    void deleteCoursesByThesisId(Long thesisId);
 }

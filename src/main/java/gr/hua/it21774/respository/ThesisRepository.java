@@ -175,5 +175,4 @@ public interface ThesisRepository extends JpaRepository<Thesis, Long> {
                         "WHERE LOWER(t.title) LIKE LOWER(CONCAT('%', :query, '%')) " +
                         "OR LOWER(CONCAT(prof.firstName, ' ', prof.lastName)) LIKE LOWER(CONCAT('%', :query, '%')) ")
         List<String> searchTheses(String query, Pageable pageable);
-
 }
