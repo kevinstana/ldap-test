@@ -175,4 +175,9 @@ public interface ThesisRepository extends JpaRepository<Thesis, Long> {
                         "WHERE LOWER(t.title) LIKE LOWER(CONCAT('%', :query, '%')) " +
                         "OR LOWER(CONCAT(prof.firstName, ' ', prof.lastName)) LIKE LOWER(CONCAT('%', :query, '%')) ")
         List<String> searchTheses(String query, Pageable pageable);
+
+        @Transactional
+        @Modifying
+        @Query("UPDATE Thesis t SET t.statusId = :statusId, t.studentId = :studentId, t.lastModified = :lastModified WHERE t.id = :thesisId")
+        void updateThesisStatus(Long thesisId, Long statusId, Long studentId, Instant lastModified);
 }

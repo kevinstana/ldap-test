@@ -72,6 +72,14 @@ public class MinioService {
     }
 
     public void deleteAllFilesInFolder(String bucketName, String folderName) throws Exception {
+
+        boolean bucketExists = minioClient.bucketExists(
+                BucketExistsArgs.builder().bucket(bucketName).build());
+
+        if (!bucketExists) {
+            return;
+        }
+
         Iterable<Result<Item>> objects = minioClient.listObjects(
                 ListObjectsArgs.builder()
                         .bucket(bucketName)

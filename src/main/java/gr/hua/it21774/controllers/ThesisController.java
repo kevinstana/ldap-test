@@ -3,7 +3,8 @@ package gr.hua.it21774.controllers;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -30,6 +31,8 @@ import gr.hua.it21774.requests.CreateThesisRequest;
 import gr.hua.it21774.requests.UpdateThesisRequest;
 import gr.hua.it21774.responses.DetailedThesisResponse;
 import gr.hua.it21774.responses.MessageRespone;
+import gr.hua.it21774.respository.ThesisRepository;
+import gr.hua.it21774.respository.UserRepository;
 import gr.hua.it21774.service.CourseService;
 import gr.hua.it21774.service.ThesisService;
 import io.jsonwebtoken.Claims;
@@ -40,11 +43,15 @@ public class ThesisController {
 
     private final ThesisService thesisService;
     private final CourseService courseService;
+    private final UserRepository userRepository;
+    private final ThesisRepository thesisRepository;
 
     public ThesisController(ThesisService thesisService,
-            CourseService courseService) {
+            CourseService courseService, UserRepository userRepository, ThesisRepository thesisRepository) {
         this.thesisService = thesisService;
         this.courseService = courseService;
+        this.userRepository = userRepository;
+        this.thesisRepository = thesisRepository;
     }
 
     @PostMapping("/theses")
@@ -77,6 +84,10 @@ public class ThesisController {
 
         if (query == null) {
             query = "";
+        }
+
+        if (query != null) {
+            query = URLDecoder.decode(query, StandardCharsets.UTF_8);
         }
 
         List<EThesisStatus> validStatuses = new ArrayList<>();
@@ -167,6 +178,16 @@ public class ThesisController {
     public ResponseEntity<?> assignStudent(@PathVariable Long id, @Valid @RequestBody AssignStudentRequest request)
             throws Exception {
 
+        boolean isStudent = userRepository.hasRole(request.getStudentId(), ERole.STUDENT);
+
+        if (!isStudent) {
+            throw new GenericException(HttpStatus.BAD_REQUEST, "You can only assign a student");
+        }
+
+        if (thesisRepository.hasStudentThesis(request.getStudentId())) {
+            throw new GenericException(HttpStatus.BAD_REQUEST, "Student already has a thesis");
+        }
+
         if (request.getType().equals("APPROVE")) {
             thesisService.assignStudent(request);
             return ResponseEntity.ok().body(new MessageRespone("Request approved"));
@@ -198,7 +219,11 @@ public class ThesisController {
     }
 
     @GetMapping("/theses/search")
-    public ResponseEntity<?> test(@RequestParam(required = false) String query) {
+    public ResponseEntity<?> searchThesis(@RequestParam(required = false) String query) {
+        if (query != null) {
+            query = URLDecoder.decode(query, StandardCharsets.UTF_8);
+        }
+
         List<String> data = thesisService.searchTheses(query);
 
         return ResponseEntity.ok().body(data);
@@ -207,8 +232,16 @@ public class ThesisController {
     @DeleteMapping("/theses/{id}")
     public ResponseEntity<?> deleteThesis(@PathVariable Long id) throws Exception {
 
-        thesisService.deleteTheses(id);
+        thesisService.deleteThesis(id);
 
         return ResponseEntity.ok().body(new MessageRespone("Thesis deleted"));
+    }
+
+    @PostMapping("/theses/{id}/reset")
+    public ResponseEntity<?> resetThesis(@PathVariable Long id) throws Exception {
+
+        thesisService.resetThesis(id);
+
+        return ResponseEntity.ok().body(new MessageRespone("Thesis reset"));
     }
 }

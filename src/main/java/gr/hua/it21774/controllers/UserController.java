@@ -1,5 +1,7 @@
 package gr.hua.it21774.controllers;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -120,5 +122,17 @@ public class UserController {
     public ResponseEntity<?> getUserProfile(@PathVariable String username) {
         CommonUserDTO profile = userService.getUserProfile(username);
         return ResponseEntity.ok().body(profile);
+    }
+
+    @GetMapping("/search-students")
+    public ResponseEntity<?> searchStudents(@RequestParam(required = false) String query) {
+
+        if (query != null) {
+            query = URLDecoder.decode(query, StandardCharsets.UTF_8);
+        }
+
+        List<CommonUserDTO> results = userService.searchStudents(query);
+
+        return ResponseEntity.ok().body(results);
     }
 }

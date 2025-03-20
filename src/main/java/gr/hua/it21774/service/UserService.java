@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import gr.hua.it21774.dto.CommonUserDTO;
 import gr.hua.it21774.enums.ERole;
 import gr.hua.it21774.exceptions.GenericException;
+import gr.hua.it21774.respository.RoleRepository;
 import gr.hua.it21774.respository.UserRepository;
 import io.jsonwebtoken.Claims;
 import jakarta.transaction.Transactional;
@@ -22,9 +23,11 @@ import jakarta.transaction.Transactional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, RoleRepository roleRepository) {
         this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
     }
 
     public Page<CommonUserDTO> getPagedUsers(Integer pageNumber, String pageSize, List<ERole> roles, Boolean enabled) {
@@ -78,5 +81,12 @@ public class UserService {
     public List<CommonUserDTO> getProfessors(String query, List<Long> excludedIds) {
 
         return userRepository.assignProfessors(query, excludedIds);
+    }
+
+    public List<CommonUserDTO> searchStudents(String query) {
+
+        Long studentRoleId = roleRepository.findIdByRole(ERole.STUDENT).get();
+
+        return userRepository.searchStudents(query, studentRoleId);
     }
 }

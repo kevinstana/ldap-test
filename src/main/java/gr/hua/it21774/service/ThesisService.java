@@ -28,6 +28,8 @@ import gr.hua.it21774.requests.AssignStudentRequest;
 import gr.hua.it21774.requests.CreateThesisRequest;
 import gr.hua.it21774.requests.UpdateThesisRequest;
 import gr.hua.it21774.respository.CourseThesisRepository;
+import gr.hua.it21774.respository.TaskFilesRepository;
+import gr.hua.it21774.respository.TasksRepository;
 import gr.hua.it21774.respository.ThesisRepository;
 import gr.hua.it21774.respository.ThesisRequestRepository;
 import gr.hua.it21774.respository.ThesisRequestStatusRepository;
@@ -45,17 +47,22 @@ public class ThesisService {
     private final UserRepository userRepository;
     private final CourseThesisRepository courseThesisRepository;
     private final MinioService minioService;
+    private final TaskFilesRepository taskFilesRepository;
+    private final TasksRepository tasksRepository;
 
     public ThesisService(ThesisRepository thesisRepository, ThesisRequestRepository thesisRequestRepository,
             ThesisRequestStatusRepository thesisRequestStatusRepository,
             UserRepository userRepository,
-            CourseThesisRepository courseThesisRepository, MinioService minioService) {
+            CourseThesisRepository courseThesisRepository, MinioService minioService,
+            TaskFilesRepository taskFilesRepository, TasksRepository tasksRepository) {
         this.thesisRepository = thesisRepository;
         this.thesisRequestRepository = thesisRequestRepository;
         this.thesisRequestStatusRepository = thesisRequestStatusRepository;
         this.userRepository = userRepository;
         this.courseThesisRepository = courseThesisRepository;
         this.minioService = minioService;
+        this.taskFilesRepository = taskFilesRepository;
+        this.tasksRepository = tasksRepository;
     }
 
     @Transactional
@@ -271,7 +278,7 @@ public class ThesisService {
     }
 
     @Transactional(rollbackOn = Exception.class)
-    public void deleteTheses(Long thesisId) throws Exception {
+    public void deleteThesis(Long thesisId) throws Exception {
 
         try {
 
@@ -283,6 +290,35 @@ public class ThesisService {
                 thesisRequestRepository.deleteRequestsByThesisId(thesisId);
                 thesisRepository.deleteById(thesisId);
             }
+        } catch (Exception e) {
+            throw new GenericException(HttpStatus.BAD_REQUEST, "Something went wrong");
+        }
+    }
+
+    @Transactional(rollbackOn = Exception.class)
+    public void resetThesis(Long thesisId) throws Exception {
+
+        try {
+
+            EThesisStatus status = thesisRepository.getThesisStatus(thesisId);
+
+            if (status.equals(EThesisStatus.IN_PROGRESS)) {
+                Long newStatusId = thesisRepository.findIdByStatus(EThesisStatus.AVAILABLE).get();
+                thesisRepository.updateThesisStatus(thesisId, newStatusId, null, Instant.now());
+
+                List<Long> taskIds = tasksRepository.findTaskIdsByThesisId(thesisId);
+                for (Long taskId : taskIds) {
+                    taskFilesRepository.deleteTaskFiles(taskId);
+                }
+
+                tasksRepository.deleteAllThesisTasks(thesisId);
+                minioService.deleteAllFilesInFolder("theses-tasks", "thesis-" + thesisId);
+
+                Long pendingRequestId = thesisRequestStatusRepository.findIdByStatus(EThesisRequestStatus.PENDING)
+                        .get();
+                thesisRequestRepository.updateStatusByThesisId(thesisId, pendingRequestId);
+            }
+
         } catch (Exception e) {
             throw new GenericException(HttpStatus.BAD_REQUEST, "Something went wrong");
         }
