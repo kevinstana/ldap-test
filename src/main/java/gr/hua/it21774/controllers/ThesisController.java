@@ -28,6 +28,7 @@ import gr.hua.it21774.enums.EThesisStatus;
 import gr.hua.it21774.exceptions.GenericException;
 import gr.hua.it21774.requests.AssignStudentRequest;
 import gr.hua.it21774.requests.CreateThesisRequest;
+import gr.hua.it21774.requests.ThesisStatusChangeRequest;
 import gr.hua.it21774.requests.UpdateThesisRequest;
 import gr.hua.it21774.responses.DetailedThesisResponse;
 import gr.hua.it21774.responses.MessageRespone;
@@ -243,5 +244,13 @@ public class ThesisController {
         thesisService.resetThesis(id);
 
         return ResponseEntity.ok().body(new MessageRespone("Thesis reset"));
+    }
+
+    @PutMapping("/theses/{id}/status")
+    public ResponseEntity<?> changeThesisStatus(@PathVariable Long id, @RequestBody ThesisStatusChangeRequest request) {
+
+        thesisService.changeThesisStatus(id, EThesisStatus.valueOf(request.getStatus()));
+
+        return ResponseEntity.ok().body(new MessageRespone("Status updated"));
     }
 }

@@ -65,7 +65,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/upload/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/download/{filename}").permitAll()
 
-                        .requestMatchers(HttpMethod.POST, "/courses/**").hasAuthority("PROFESSOR")
+                        .requestMatchers(HttpMethod.POST, "/courses/**").hasAnyAuthority("PROFESSOR", "SECRETARY")
 
                         .requestMatchers(HttpMethod.GET, "/users").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/users").hasAuthority("ADMIN")

@@ -131,8 +131,8 @@ public interface ThesisRepository extends JpaRepository<Thesis, Long> {
 
         @Transactional
         @Modifying
-        @Query("UPDATE Thesis t SET t.statusId = :inProgressStatusId, t.studentId = :studentId WHERE t.id = :thesisId")
-        void updateThesisStatus(Long thesisId, Long studentId, Long inProgressStatusId);
+        @Query("UPDATE Thesis t SET t.statusId = :statusId, t.studentId = :studentId WHERE t.id = :thesisId")
+        void updateThesisStatus(Long thesisId, Long studentId, Long statusId);
 
         @Query("SELECT ts.status FROM Thesis t " +
                         "JOIN ThesisStatus ts ON ts.id = t.statusId " +
@@ -180,4 +180,10 @@ public interface ThesisRepository extends JpaRepository<Thesis, Long> {
         @Modifying
         @Query("UPDATE Thesis t SET t.statusId = :statusId, t.studentId = :studentId, t.lastModified = :lastModified WHERE t.id = :thesisId")
         void updateThesisStatus(Long thesisId, Long statusId, Long studentId, Instant lastModified);
+
+
+        @Transactional
+        @Modifying
+        @Query("UPDATE Thesis t SET t.statusId = :statusId, t.lastModified = :lastModified WHERE t.id = :thesisId")
+        void updateThesisStatus(Long thesisId, Long statusId, Instant lastModified);
 }

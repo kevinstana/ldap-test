@@ -224,7 +224,7 @@ public class ThesisService {
         thesisRepository.rejectOtherRequests(requestId, request.getThesisId(), rejectedStatusId);
 
         Long inProgressStatusId = thesisRepository.findIdByStatus(EThesisStatus.IN_PROGRESS).get();
-        thesisRepository.updateThesisStatus(request.getThesisId(), request.getStudentId(), inProgressStatusId);
+        thesisRepository.updateThesisStatus(request.getThesisId(), request.getStudentId(), inProgressStatusId, Instant.now());
     }
 
     @Transactional
@@ -322,5 +322,11 @@ public class ThesisService {
         } catch (Exception e) {
             throw new GenericException(HttpStatus.BAD_REQUEST, "Something went wrong");
         }
+    }
+
+    public void changeThesisStatus(Long thesisId, EThesisStatus status) {
+        Long statusId = thesisRepository.findIdByStatus(status).get();
+
+        thesisRepository.updateThesisStatus(thesisId, statusId, Instant.now());
     }
 }

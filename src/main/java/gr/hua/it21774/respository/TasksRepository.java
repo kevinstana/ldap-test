@@ -44,4 +44,5 @@ public interface TasksRepository extends JpaRepository<Task, Long> {
 
         @Query("SELECT t.id FROM Task t WHERE t.thesisId = :thesisId")
         List<Long> findTaskIdsByThesisId(Long thesisId);
+
 }
