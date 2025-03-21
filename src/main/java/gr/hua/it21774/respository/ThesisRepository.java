@@ -40,7 +40,17 @@ public interface ThesisRepository extends JpaRepository<Thesis, Long> {
                         "      LOWER(t.title) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
                         "      LOWER(CONCAT(u.firstName, ' ', u.lastName)) LIKE LOWER(CONCAT('%', :query, '%'))) " +
                         "AND (:statuses IS NULL OR ts.status IN :statuses) " +
-                        "ORDER BY t.id ASC")
+                        "ORDER BY " +
+                        "         CASE " +
+                        "            WHEN ts.status = 'AVAILABLE' THEN 1 " +
+                        "            WHEN ts.status = 'IN_PROGRESS' THEN 2 " +
+                        "            WHEN ts.status = 'PENDING_REVIEW' THEN 3 " +
+                        "            WHEN ts.status = 'REVIEWED' THEN 4 " +
+                        "            WHEN ts.status = 'PUBLISHED' THEN 5 " +
+                        "            ELSE 6 " +
+                        "         END, " +
+                        "         CASE WHEN ts.status = 'AVAILABLE' THEN t.createdAt END DESC, " +
+                        "         t.createdAt DESC")
         Page<ThesisDTO> customFindAll(Pageable pageable, @Param("query") String query, List<EThesisStatus> statuses);
 
         @Query("SELECT new gr.hua.it21774.dto.DetailedThesisDTO(" +
@@ -179,11 +189,25 @@ public interface ThesisRepository extends JpaRepository<Thesis, Long> {
         @Transactional
         @Modifying
         @Query("UPDATE Thesis t SET t.statusId = :statusId, t.studentId = :studentId, t.lastModified = :lastModified WHERE t.id = :thesisId")
-        void updateThesisStatus(Long thesisId, Long statusId, Long studentId, Instant lastModified);
-
+        void updateThesisStatus(Long thesisId, Long studentId, Long statusId, Instant lastModified);
 
         @Transactional
         @Modifying
         @Query("UPDATE Thesis t SET t.statusId = :statusId, t.lastModified = :lastModified WHERE t.id = :thesisId")
         void updateThesisStatus(Long thesisId, Long statusId, Instant lastModified);
+
+        @Query("SELECT new gr.hua.it21774.dto.ThesisDTO(" +
+                        "t.id, " +
+                        "t.title, " +
+                        "TO_CHAR(TIMEZONE('Europe/Athens', t.createdAt), 'DD/MM/YYYY'), " +
+                        "TO_CHAR(TIMEZONE('Europe/Athens', t.lastModified), 'DD/MM/YYYY'), " +
+                        "CONCAT(u.firstName, ' ', u.lastName), " +
+                        "ts.status) " +
+                        "FROM Thesis t " +
+                        "JOIN User u ON u.id = t.professorId " +
+                        "JOIN ThesisStatus ts ON ts.id = t.statusId " +
+                        "WHERE t.secondReviewerId = :reviewerId OR t.thirdReviewerId = :reviewerId " +
+                        "ORDER BY t.id ASC")
+        Page<ThesisDTO> getMyAssignedReviews(Pageable pageable, Long reviewerId);
+
 }

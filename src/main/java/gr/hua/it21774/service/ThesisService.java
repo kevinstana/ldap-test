@@ -155,6 +155,22 @@ public class ThesisService {
         return thesisRepository.customFindAllByTeacherId(pageable, professorId);
     }
 
+    public Page<ThesisDTO> getMyAssignedReviews(Integer pageNumber, String pageSize) {
+        Pageable pageable;
+
+        if (pageSize.equals("ALL")) {
+            pageable = Pageable.unpaged();
+        } else {
+            pageable = PageRequest.of(pageNumber, Integer.parseInt(pageSize));
+        }
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Claims accessTokenClaims = (Claims) authentication.getDetails();
+        Long reviewerId = Long.parseLong(accessTokenClaims.getSubject());
+
+        return thesisRepository.getMyAssignedReviews(pageable, reviewerId);
+    }
+
     @Transactional
     public void updateThesis(Long id, UpdateThesisRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -304,7 +320,7 @@ public class ThesisService {
 
             if (status.equals(EThesisStatus.IN_PROGRESS)) {
                 Long newStatusId = thesisRepository.findIdByStatus(EThesisStatus.AVAILABLE).get();
-                thesisRepository.updateThesisStatus(thesisId, newStatusId, null, Instant.now());
+                thesisRepository.updateThesisStatus(thesisId, null, newStatusId, Instant.now());
 
                 List<Long> taskIds = tasksRepository.findTaskIdsByThesisId(thesisId);
                 for (Long taskId : taskIds) {
