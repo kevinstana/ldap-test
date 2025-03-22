@@ -43,6 +43,21 @@ public class MinioService {
                         .build());
     }
 
+    public void publishThesis(MultipartFile file, String bucketName, String folderName, String fileName)
+            throws Exception {
+        if (!minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build())) {
+            minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucketName).build());
+        }
+
+        minioClient.putObject(
+                PutObjectArgs.builder()
+                        .bucket(bucketName)
+                        .object("/" + folderName + "/" + fileName)
+                        .stream(file.getInputStream(), file.getSize(), -1)
+                        .contentType(file.getContentType())
+                        .build());
+    }
+
     public String getSignedUrl(String bucketName, String folderName, String fileName) throws Exception {
         return minioClient.getPresignedObjectUrl(
                 GetPresignedObjectUrlArgs.builder()

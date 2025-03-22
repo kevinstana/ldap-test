@@ -13,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -28,7 +29,9 @@ import gr.hua.it21774.enums.EThesisStatus;
 import gr.hua.it21774.exceptions.GenericException;
 import gr.hua.it21774.requests.AssignStudentRequest;
 import gr.hua.it21774.requests.CreateThesisRequest;
+import gr.hua.it21774.requests.DateRequest;
 import gr.hua.it21774.requests.GradeRequest;
+import gr.hua.it21774.requests.ThesisPublishRequest;
 import gr.hua.it21774.requests.ThesisStatusChangeRequest;
 import gr.hua.it21774.requests.UpdateThesisRequest;
 import gr.hua.it21774.responses.DetailedThesisResponse;
@@ -286,5 +289,14 @@ public class ThesisController {
         thesisService.handleThesisGrade(id, request.getGrade());
 
         return ResponseEntity.ok().body(new MessageRespone("Thesis graded"));
+    }
+
+    @PostMapping("/theses/{id}/publish")
+    public ResponseEntity<?> publishThesis(@PathVariable Long id, @ModelAttribute ThesisPublishRequest request)
+            throws Exception {
+
+        thesisService.publishThesis(id, request);
+
+        return ResponseEntity.ok().body(new MessageRespone("Thesis published"));
     }
 }

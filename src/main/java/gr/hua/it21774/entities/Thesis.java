@@ -61,8 +61,12 @@ public class Thesis {
     @Column(name = "third_reviewer_grade")
     private Double thirdReviewerGrade;
 
-    @Column(name = "doc_link")
-    private String docLink;
+    @Column(name = "file_name")
+    private String fileName;
+
+    @Column(name = "file_size")
+    private Long fileSize;
+
 
     public Thesis() {
     }
@@ -72,7 +76,7 @@ public class Thesis {
             Instant startedAt,
             Long lastModifiedBy, Long professorId, Long studentId, Long secondReviewerId,
             Long thirdReviewerId, Long statusId, Double professorGrade, Double secondReviewerGrade,
-            Double thirdReviewerGrade, String docLink) {
+            Double thirdReviewerGrade, String fileName, Long fileSize) {
         this.title = title;
         this.description = description;
         this.createdBy = createdBy;
@@ -88,7 +92,8 @@ public class Thesis {
         this.professorGrade = professorGrade;
         this.secondReviewerGrade = secondReviewerGrade;
         this.thirdReviewerGrade = thirdReviewerGrade;
-        this.docLink = docLink;
+        this.fileName = fileName;
+        this.fileSize = fileSize;
     }
 
     public Long getId() {
@@ -219,12 +224,12 @@ public class Thesis {
         this.thirdReviewerGrade = thirdReviewerGrade;
     }
 
-    public String getDocLink() {
-        return docLink;
+    public String getFileName() {
+        return fileName;
     }
 
-    public void setDocLink(String docLink) {
-        this.docLink = docLink;
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 
     public static boolean isValidStatus(String value) {
@@ -238,5 +243,13 @@ public class Thesis {
             }
         }
         return false;
+    }
+
+    public Long getFileSize() {
+        return fileSize;
+    }
+
+    public void setFileSize(Long fileSize) {
+        this.fileSize = fileSize;
     }
 }

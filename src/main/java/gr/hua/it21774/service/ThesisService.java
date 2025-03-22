@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import gr.hua.it21774.dto.DetailedThesisDTO;
 import gr.hua.it21774.dto.ThesisDTO;
@@ -26,6 +27,7 @@ import gr.hua.it21774.enums.EThesisStatus;
 import gr.hua.it21774.exceptions.GenericException;
 import gr.hua.it21774.requests.AssignStudentRequest;
 import gr.hua.it21774.requests.CreateThesisRequest;
+import gr.hua.it21774.requests.ThesisPublishRequest;
 import gr.hua.it21774.requests.UpdateThesisRequest;
 import gr.hua.it21774.respository.CourseThesisRepository;
 import gr.hua.it21774.respository.TaskFilesRepository;
@@ -93,7 +95,7 @@ public class ThesisService {
 
         Instant now = Instant.now();
         Thesis thesis = new Thesis(request.getTitle(), request.getDescription(), createdBy, now, now, null, createdBy,
-                createdBy, null, secondReviewerId, thirdReviewerId, statusId, null, null, null, null);
+                createdBy, null, secondReviewerId, thirdReviewerId, statusId, null, null, null, null, null);
 
         Thesis createdThesis = thesisRepository.save(thesis);
         courseThesisRepository.saveCoursesForThesis(request.getRecommendedCourses(), createdThesis.getId());
@@ -344,6 +346,14 @@ public class ThesisService {
     public void changeThesisStatus(Long thesisId, EThesisStatus status) {
         Long statusId = thesisRepository.findIdByStatus(status).get();
 
+        if (status.equals(EThesisStatus.REVIEWED)) {
+            DetailedThesisDTO thesis = thesisRepository.findThesis(thesisId);
+            if (thesis.getProfessorGrade() == null || thesis.getReviewer1Grade() == null
+                    || thesis.getReviewer2Grade() == null) {
+                throw new GenericException(HttpStatus.BAD_REQUEST, "Not graded by all reviewers");
+            }
+        }
+
         thesisRepository.updateThesisStatus(thesisId, statusId, Instant.now());
     }
 
@@ -361,10 +371,23 @@ public class ThesisService {
             thesisRepository.professorGrade(thesisId, grade);
         }
 
-        thesis = thesisRepository.findThesis(thesisId);
-        if (thesis.getProfessorGrade() != null && thesis.getReviewer1Grade() != null && thesis.getReviewer2Grade() != null) {
-            Long reviewedThesisStatusId = thesisRepository.findIdByStatus(EThesisStatus.REVIEWED).get();
-            thesisRepository.updateThesisStatus(thesisId, reviewedThesisStatusId, Instant.now());
-        }        
+        // thesis = thesisRepository.findThesis(thesisId);
+        // if (thesis.getProfessorGrade() != null && thesis.getReviewer1Grade() != null
+        // && thesis.getReviewer2Grade() != null) {
+        // Long reviewedThesisStatusId =
+        // thesisRepository.findIdByStatus(EThesisStatus.REVIEWED).get();
+        // thesisRepository.updateThesisStatus(thesisId, reviewedThesisStatusId,
+        // Instant.now());
+        // }
+    }
+
+    @Transactional(rollbackOn = Exception.class)
+    public void publishThesis(Long thesisId, ThesisPublishRequest request) throws Exception {
+
+        MultipartFile file = request.getPdf();
+        Long publishedId = thesisRepository.findIdByStatus(EThesisStatus.PUBLISHED).get();
+
+        minioService.publishThesis(file, "published-theses", "thesis-" + thesisId, file.getOriginalFilename());
+        thesisRepository.publishThesis(thesisId, publishedId, "report.pdf", file.getSize(), Instant.now());
     }
 }

@@ -9,7 +9,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import gr.hua.it21774.dto.DetailedThesisDTO;
@@ -40,18 +39,18 @@ public interface ThesisRepository extends JpaRepository<Thesis, Long> {
                         "      LOWER(t.title) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
                         "      LOWER(CONCAT(u.firstName, ' ', u.lastName)) LIKE LOWER(CONCAT('%', :query, '%'))) " +
                         "AND (:statuses IS NULL OR ts.status IN :statuses) " +
+                        "AND ts.status <> 'PUBLISHED' " +
                         "ORDER BY " +
                         "         CASE " +
                         "            WHEN ts.status = 'AVAILABLE' THEN 1 " +
                         "            WHEN ts.status = 'IN_PROGRESS' THEN 2 " +
                         "            WHEN ts.status = 'PENDING_REVIEW' THEN 3 " +
                         "            WHEN ts.status = 'REVIEWED' THEN 4 " +
-                        "            WHEN ts.status = 'PUBLISHED' THEN 5 " +
                         "            ELSE 6 " +
                         "         END, " +
                         "         CASE WHEN ts.status = 'AVAILABLE' THEN t.createdAt END DESC, " +
                         "         t.createdAt DESC")
-        Page<ThesisDTO> customFindAll(Pageable pageable, @Param("query") String query, List<EThesisStatus> statuses);
+        Page<ThesisDTO> customFindAll(Pageable pageable, String query, List<EThesisStatus> statuses);
 
         @Query("SELECT new gr.hua.it21774.dto.DetailedThesisDTO(" +
                         "t.id, " +
@@ -94,7 +93,7 @@ public interface ThesisRepository extends JpaRepository<Thesis, Long> {
                         "JOIN ThesisStatus ts ON ts.id = t.statusId " +
                         "WHERE (:id IS NULL OR t.professorId = :id) " +
                         "ORDER BY t.id ASC")
-        Page<ThesisDTO> customFindAllByTeacherId(Pageable pageable, @Param("id") Long id);
+        Page<ThesisDTO> customFindAllByTeacherId(Pageable pageable, Long id);
 
         @Modifying
         @Query("DELETE FROM CourseTheses c WHERE c.thesisId = :thesisId")
@@ -230,4 +229,44 @@ public interface ThesisRepository extends JpaRepository<Thesis, Long> {
         @Modifying
         @Query("UPDATE Thesis t SET t.professorGrade = :grade WHERE t.id = :thesisId")
         void professorGrade(Long thesisId, Double grade);
+
+        @Transactional
+        @Modifying
+        @Query("UPDATE Thesis t SET t.statusId = :statusId, t.fileName = :fileName, t.fileSize = :fileSize, t.lastModified = :lastModified WHERE t.id = :thesisId")
+        void publishThesis(Long thesisId, Long statusId, String fileName, Long fileSize, Instant lastModified);
+
+        @Query("SELECT new gr.hua.it21774.dto.DetailedThesisDTO(" +
+                        "t.id, " +
+                        "t.title, " +
+                        "t.description, " +
+                        "u.id, " +
+                        "u.firstName, " +
+                        "u.lastName, " +
+                        "t.professorGrade, " +
+                        "r1.id, " +
+                        "r1.firstName, " +
+                        "r1.lastName, " +
+                        "t.secondReviewerGrade, " +
+                        "r2.id, " +
+                        "r2.firstName, " +
+                        "r2.lastName, " +
+                        "t.thirdReviewerGrade, " +
+                        "s.id, " +
+                        "s.firstName, " +
+                        "s.lastName, " +
+                        "ts.status) " +
+                        "FROM Thesis t " +
+                        "JOIN User u ON u.id = t.professorId " +
+                        "JOIN User r1 ON r1.id = t.secondReviewerId " +
+                        "JOIN User r2 ON r2.id = t.thirdReviewerId " +
+                        "JOIN User s ON s.id = t.studentId " +
+                        "JOIN ThesisStatus ts ON ts.id = t.statusId " +
+                        "WHERE ts.status = 'PUBLISHED' " +
+                        "AND (:query IS NULL OR " +
+                        "      LOWER(t.title) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+                        "      LOWER(CONCAT(s.firstName, ' ', s.lastName)) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+                        "      LOWER(CONCAT(u.firstName, ' ', u.lastName)) LIKE LOWER(CONCAT('%', :query, '%'))) " +
+                        "ORDER BY t.lastModified DESC")
+        Page<DetailedThesisDTO> customFindPublishedTheses(Pageable pageable, String query);
+
 }
