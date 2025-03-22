@@ -67,6 +67,8 @@ public class Thesis {
     @Column(name = "file_size")
     private Long fileSize;
 
+    @Column(name = "published_at")
+    private Instant publishedAt;
 
     public Thesis() {
     }
@@ -76,7 +78,7 @@ public class Thesis {
             Instant startedAt,
             Long lastModifiedBy, Long professorId, Long studentId, Long secondReviewerId,
             Long thirdReviewerId, Long statusId, Double professorGrade, Double secondReviewerGrade,
-            Double thirdReviewerGrade, String fileName, Long fileSize) {
+            Double thirdReviewerGrade, String fileName, Long fileSize, Instant publishedAt) {
         this.title = title;
         this.description = description;
         this.createdBy = createdBy;
@@ -94,6 +96,7 @@ public class Thesis {
         this.thirdReviewerGrade = thirdReviewerGrade;
         this.fileName = fileName;
         this.fileSize = fileSize;
+        this.publishedAt = publishedAt;
     }
 
     public Long getId() {
@@ -251,5 +254,13 @@ public class Thesis {
 
     public void setFileSize(Long fileSize) {
         this.fileSize = fileSize;
+    }
+
+    public Instant getPublishedAt() {
+        return publishedAt;
+    }
+
+    public void setPublishedAt(Instant publishedAt) {
+        this.publishedAt = publishedAt;
     }
 }

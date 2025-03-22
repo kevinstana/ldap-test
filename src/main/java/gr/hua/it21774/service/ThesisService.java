@@ -95,7 +95,7 @@ public class ThesisService {
 
         Instant now = Instant.now();
         Thesis thesis = new Thesis(request.getTitle(), request.getDescription(), createdBy, now, now, null, createdBy,
-                createdBy, null, secondReviewerId, thirdReviewerId, statusId, null, null, null, null, null);
+                createdBy, null, secondReviewerId, thirdReviewerId, statusId, null, null, null, null, null, null);
 
         Thesis createdThesis = thesisRepository.save(thesis);
         courseThesisRepository.saveCoursesForThesis(request.getRecommendedCourses(), createdThesis.getId());

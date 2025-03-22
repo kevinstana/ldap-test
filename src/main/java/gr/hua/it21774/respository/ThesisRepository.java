@@ -238,7 +238,7 @@ public interface ThesisRepository extends JpaRepository<Thesis, Long> {
         @Query("SELECT new gr.hua.it21774.dto.DetailedThesisDTO(" +
                         "t.id, " +
                         "t.title, " +
-                        "t.description, " +
+                        "t.descriptgion, " +
                         "u.id, " +
                         "u.firstName, " +
                         "u.lastName, " +

@@ -67,6 +67,7 @@ CREATE TABLE IF NOT EXISTS theses (
     ),
     file_name varchar(255),
     file_size bigint,
+    published_at timestamp,
     constraint fk_theses_created_by foreign key (created_by) references users (id),
     constraint fk_theses_last_modified_by foreign key (last_modified_by) references users (id),
     constraint fk_theses_professor_id foreign key (professor_id) references users (id),
@@ -205,10 +206,12 @@ add constraint fk_request_thesis_id foreign key (thesis_id) references theses (i
 -- Dates
 create table if not exists assignment_dates (
     id bigserial primary key,
-    from_date timestamp not null, to_date timestamp not null
+    from_date timestamp not null,
+    to_date timestamp not null
 );
 
 create table if not exists reviewing_dates (
     id bigserial primary key,
-    from_date timestamp not null, to_date timestamp not null
+    from_date timestamp not null,
+    to_date timestamp not null
 );
