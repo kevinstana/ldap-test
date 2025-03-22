@@ -72,7 +72,7 @@ public interface ThesisRepository extends JpaRepository<Thesis, Long> {
                         "stu.firstName, " +
                         "stu.lastName, " +
                         "ts.status, " +
-                        "ts.publishedAt) " +
+                        "t.publishedAt) " +
                         "FROM Thesis t " +
                         "JOIN User prof ON prof.id = t.professorId " +
                         "JOIN User rev1 ON rev1.id = t.secondReviewerId " +
@@ -172,7 +172,7 @@ public interface ThesisRepository extends JpaRepository<Thesis, Long> {
                         "stu.firstName, " +
                         "stu.lastName, " +
                         "ts.status, " +
-                        "ts.publishedAt) " +
+                        "t.publishedAt) " +
                         "FROM Thesis t " +
                         "JOIN User prof ON prof.id = t.professorId " +
                         "JOIN User rev1 ON rev1.id = t.secondReviewerId " +
@@ -240,7 +240,7 @@ public interface ThesisRepository extends JpaRepository<Thesis, Long> {
         @Query("SELECT new gr.hua.it21774.dto.DetailedThesisDTO(" +
                         "t.id, " +
                         "t.title, " +
-                        "t.descriptgion, " +
+                        "t.description, " +
                         "u.id, " +
                         "u.firstName, " +
                         "u.lastName, " +
@@ -252,12 +252,12 @@ public interface ThesisRepository extends JpaRepository<Thesis, Long> {
                         "r2.id, " +
                         "r2.firstName, " +
                         "r2.lastName, " +
-                        "t.third[ReviewerGrade, " +
+                        "t.thirdReviewerGrade, " +
                         "s.id, " +
                         "s.firstName, " +
                         "s.lastName, " +
                         "ts.status, " +
-                        "ts.publishedAt) " +
+                        "t.publishedAt) " +
                         "FROM Thesis t " +
                         "JOIN User u ON u.id = t.professorId " +
                         "JOIN User r1 ON r1.id = t.secondReviewerId " +
@@ -269,7 +269,7 @@ public interface ThesisRepository extends JpaRepository<Thesis, Long> {
                         "      LOWER(t.title) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
                         "      LOWER(CONCAT(s.firstName, ' ', s.lastName)) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
                         "      LOWER(CONCAT(u.firstName, ' ', u.lastName)) LIKE LOWER(CONCAT('%', :query, '%'))) " +
-                        "ORDER BY t.lastModified DESC")
+                        "ORDER BY t.publishedAt DESC")
         Page<DetailedThesisDTO> customFindPublishedTheses(Pageable pageable, String query);
 
 }
