@@ -240,7 +240,8 @@ public class ThesisService {
         thesisRepository.rejectOtherRequests(requestId, request.getThesisId(), rejectedStatusId);
 
         Long inProgressStatusId = thesisRepository.findIdByStatus(EThesisStatus.IN_PROGRESS).get();
-        thesisRepository.updateThesisStatus(request.getThesisId(), request.getStudentId(), inProgressStatusId, Instant.now());
+        thesisRepository.updateThesisStatus(request.getThesisId(), request.getStudentId(), inProgressStatusId,
+                Instant.now());
     }
 
     @Transactional
@@ -344,5 +345,26 @@ public class ThesisService {
         Long statusId = thesisRepository.findIdByStatus(status).get();
 
         thesisRepository.updateThesisStatus(thesisId, statusId, Instant.now());
+    }
+
+    public void handleThesisGrade(Long thesisId, Double grade) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Claims accessTokenClaims = (Claims) authentication.getDetails();
+        Long reviewerId = Long.parseLong(accessTokenClaims.getSubject());
+
+        DetailedThesisDTO thesis = thesisRepository.findThesis(thesisId);
+        if (reviewerId.equals(thesis.getReviewer1Id())) {
+            thesisRepository.secondReviewerGrade(thesisId, grade);
+        } else if (reviewerId.equals(thesis.getReviewer2Id())) {
+            thesisRepository.thirdReviewerGrade(thesisId, grade);
+        } else if (reviewerId.equals(thesis.getProfessorId())) {
+            thesisRepository.professorGrade(thesisId, grade);
+        }
+
+        thesis = thesisRepository.findThesis(thesisId);
+        if (thesis.getProfessorGrade() != null && thesis.getReviewer1Grade() != null && thesis.getReviewer2Grade() != null) {
+            Long reviewedThesisStatusId = thesisRepository.findIdByStatus(EThesisStatus.REVIEWED).get();
+            thesisRepository.updateThesisStatus(thesisId, reviewedThesisStatusId, Instant.now());
+        }        
     }
 }

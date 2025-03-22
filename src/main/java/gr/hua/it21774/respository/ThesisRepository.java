@@ -60,12 +60,15 @@ public interface ThesisRepository extends JpaRepository<Thesis, Long> {
                         "prof.id, " +
                         "prof.firstName, " +
                         "prof.lastName, " +
+                        "t.professorGrade, " +
                         "rev1.id, " +
                         "rev1.firstName, " +
                         "rev1.lastName, " +
+                        "t.secondReviewerGrade, " +
                         "rev2.id, " +
                         "rev2.firstName, " +
                         "rev2.lastName, " +
+                        "t.thirdReviewerGrade, " +
                         "stu.id, " +
                         "stu.firstName, " +
                         "stu.lastName, " +
@@ -156,12 +159,15 @@ public interface ThesisRepository extends JpaRepository<Thesis, Long> {
                         "prof.id, " +
                         "prof.firstName, " +
                         "prof.lastName, " +
+                        "t.professorGrade, " +
                         "rev1.id, " +
                         "rev1.firstName, " +
                         "rev1.lastName, " +
+                        "t.secondReviewerGrade, " +
                         "rev2.id, " +
                         "rev2.firstName, " +
                         "rev2.lastName, " +
+                        "t.thirdReviewerGrade, " +
                         "stu.id, " +
                         "stu.firstName, " +
                         "stu.lastName, " +
@@ -210,4 +216,18 @@ public interface ThesisRepository extends JpaRepository<Thesis, Long> {
                         "ORDER BY t.id ASC")
         Page<ThesisDTO> getMyAssignedReviews(Pageable pageable, Long reviewerId);
 
+        @Transactional
+        @Modifying
+        @Query("UPDATE Thesis t SET t.secondReviewerGrade = :grade WHERE t.id = :thesisId")
+        void secondReviewerGrade(Long thesisId, Double grade);
+
+        @Transactional
+        @Modifying
+        @Query("UPDATE Thesis t SET t.thirdReviewerGrade = :grade WHERE t.id = :thesisId")
+        void thirdReviewerGrade(Long thesisId, Double grade);
+
+        @Transactional
+        @Modifying
+        @Query("UPDATE Thesis t SET t.professorGrade = :grade WHERE t.id = :thesisId")
+        void professorGrade(Long thesisId, Double grade);
 }

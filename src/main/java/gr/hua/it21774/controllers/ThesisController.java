@@ -28,6 +28,7 @@ import gr.hua.it21774.enums.EThesisStatus;
 import gr.hua.it21774.exceptions.GenericException;
 import gr.hua.it21774.requests.AssignStudentRequest;
 import gr.hua.it21774.requests.CreateThesisRequest;
+import gr.hua.it21774.requests.GradeRequest;
 import gr.hua.it21774.requests.ThesisStatusChangeRequest;
 import gr.hua.it21774.requests.UpdateThesisRequest;
 import gr.hua.it21774.responses.DetailedThesisResponse;
@@ -277,5 +278,13 @@ public class ThesisController {
         Page<ThesisDTO> theses = thesisService.getMyAssignedReviews(intPage, size);
 
         return ResponseEntity.ok().body(theses);
+    }
+
+    @PostMapping("/theses/{id}/grade")
+    public ResponseEntity<?> gradeThesis(@PathVariable Long id, @RequestBody GradeRequest request) {
+
+        thesisService.handleThesisGrade(id, request.getGrade());
+
+        return ResponseEntity.ok().body(new MessageRespone("Thesis graded"));
     }
 }

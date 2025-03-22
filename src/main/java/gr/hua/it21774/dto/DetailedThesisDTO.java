@@ -11,14 +11,17 @@ public class DetailedThesisDTO {
     private Long professorId;
     private String professorFirstName;
     private String professorLastName;
+    private Double professorGrade;
 
     private Long reviewer1Id;
     private String reviewer1FirstName;
     private String reviewer1LastName;
+    private Double reviewer1Grade;
 
     private Long reviewer2Id;
     private String reviewer2FirstName;
     private String reviewer2LastName;
+    private Double reviewer2Grade;
 
     private Long studentId;
     private String studentFirstName;
@@ -30,9 +33,9 @@ public class DetailedThesisDTO {
     }
 
     public DetailedThesisDTO(Long id, String title, String description,
-            Long professorId, String professorFirstName, String professorLastName,
-            Long reviewer1Id, String reviewer1FirstName, String reviewer1LastName,
-            Long reviewer2Id, String reviewer2FirstName, String reviewer2LastName,
+            Long professorId, String professorFirstName, String professorLastName, Double professorGrade,
+            Long reviewer1Id, String reviewer1FirstName, String reviewer1LastName, Double reviewer1Grade,
+            Long reviewer2Id, String reviewer2FirstName, String reviewer2LastName, Double reviewer2Grade,
             Long studentId, String studentFirstName, String studentLastName,
             EThesisStatus status) {
         this.id = id;
@@ -41,16 +44,43 @@ public class DetailedThesisDTO {
         this.professorId = professorId;
         this.professorFirstName = professorFirstName;
         this.professorLastName = professorLastName;
+        this.professorGrade = professorGrade;
         this.reviewer1Id = reviewer1Id;
         this.reviewer1FirstName = reviewer1FirstName;
         this.reviewer1LastName = reviewer1LastName;
+        this.reviewer1Grade = reviewer1Grade;
         this.reviewer2Id = reviewer2Id;
         this.reviewer2FirstName = reviewer2FirstName;
         this.reviewer2LastName = reviewer2LastName;
+        this.reviewer2Grade = reviewer2Grade;
         this.studentId = studentId != null ? studentId : null;
         this.studentFirstName = studentFirstName != null ? studentFirstName : null;
         this.studentLastName = studentLastName != null ? studentLastName : null;
         this.status = status;
+    }
+
+    public Double getProfessorGrade() {
+        return professorGrade;
+    }
+
+    public void setProfessorGrade(Double professorGrade) {
+        this.professorGrade = professorGrade;
+    }
+
+    public Double getReviewer1Grade() {
+        return reviewer1Grade;
+    }
+
+    public void setReviewer1Grade(Double reviewer1Grade) {
+        this.reviewer1Grade = reviewer1Grade;
+    }
+
+    public Double getReviewer2Grade() {
+        return reviewer2Grade;
+    }
+
+    public void setReviewer2Grade(Double reviewer2Grade) {
+        this.reviewer2Grade = reviewer2Grade;
     }
 
     public Long getId() {
