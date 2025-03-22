@@ -29,16 +29,17 @@ import gr.hua.it21774.enums.EThesisStatus;
 import gr.hua.it21774.exceptions.GenericException;
 import gr.hua.it21774.requests.AssignStudentRequest;
 import gr.hua.it21774.requests.CreateThesisRequest;
-import gr.hua.it21774.requests.DateRequest;
 import gr.hua.it21774.requests.GradeRequest;
 import gr.hua.it21774.requests.ThesisPublishRequest;
 import gr.hua.it21774.requests.ThesisStatusChangeRequest;
 import gr.hua.it21774.requests.UpdateThesisRequest;
 import gr.hua.it21774.responses.DetailedThesisResponse;
 import gr.hua.it21774.responses.MessageRespone;
+import gr.hua.it21774.responses.SignedUrlResponse;
 import gr.hua.it21774.respository.ThesisRepository;
 import gr.hua.it21774.respository.UserRepository;
 import gr.hua.it21774.service.CourseService;
+import gr.hua.it21774.service.MinioService;
 import gr.hua.it21774.service.ThesisService;
 import io.jsonwebtoken.Claims;
 import jakarta.validation.Valid;
@@ -50,13 +51,16 @@ public class ThesisController {
     private final CourseService courseService;
     private final UserRepository userRepository;
     private final ThesisRepository thesisRepository;
+    private final MinioService minioService;
 
     public ThesisController(ThesisService thesisService,
-            CourseService courseService, UserRepository userRepository, ThesisRepository thesisRepository) {
+            CourseService courseService, UserRepository userRepository, ThesisRepository thesisRepository,
+            MinioService minioService) {
         this.thesisService = thesisService;
         this.courseService = courseService;
         this.userRepository = userRepository;
         this.thesisRepository = thesisRepository;
+        this.minioService = minioService;
     }
 
     @PostMapping("/theses")
@@ -299,4 +303,39 @@ public class ThesisController {
 
         return ResponseEntity.ok().body(new MessageRespone("Thesis published"));
     }
+
+    @GetMapping("/theses/published")
+    public ResponseEntity<?> getPublishedTheses(@RequestParam(required = false) String page,
+            @RequestParam(required = false) String size, @RequestParam(required = false) String query) {
+
+        List<String> validSizeValues = Arrays.asList("5", "10", "15", "20");
+
+        Integer intPage = 0;
+        try {
+            intPage = Integer.parseInt(page);
+            if (intPage < 0) {
+                intPage = 0;
+            }
+        } catch (Exception e) {
+            intPage = 0;
+        }
+
+        if (size == null || !validSizeValues.contains(size)) {
+            size = "15";
+        }
+
+        Page<DetailedThesisDTO> theses = thesisService.getPublishedTheses(intPage, size, query);
+
+        return ResponseEntity.ok().body(theses);
+    }
+
+    @GetMapping("/theses/published/{id}/{fileName}")
+    public ResponseEntity<?> getPublishedReport(@PathVariable Long id, @PathVariable String fileName) throws Exception {
+
+        String url = minioService.getSignedUrl("published-theses", "thesis-" + id, fileName);
+
+        return ResponseEntity.ok()
+                .body(new SignedUrlResponse(url));
+    }
+
 }

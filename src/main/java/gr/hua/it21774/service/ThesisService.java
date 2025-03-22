@@ -242,7 +242,7 @@ public class ThesisService {
         thesisRepository.rejectOtherRequests(requestId, request.getThesisId(), rejectedStatusId);
 
         Long inProgressStatusId = thesisRepository.findIdByStatus(EThesisStatus.IN_PROGRESS).get();
-        thesisRepository.updateThesisStatus(request.getThesisId(), request.getStudentId(), inProgressStatusId,
+        thesisRepository.assignStudent(request.getThesisId(), request.getStudentId(), inProgressStatusId,
                 Instant.now());
     }
 
@@ -387,7 +387,18 @@ public class ThesisService {
         MultipartFile file = request.getPdf();
         Long publishedId = thesisRepository.findIdByStatus(EThesisStatus.PUBLISHED).get();
 
-        minioService.publishThesis(file, "published-theses", "thesis-" + thesisId, file.getOriginalFilename());
+        minioService.publishThesis(file, "published-theses", "thesis-" + thesisId, "report.pdf");
         thesisRepository.publishThesis(thesisId, publishedId, "report.pdf", file.getSize(), Instant.now());
+    }
+
+    public Page<DetailedThesisDTO> getPublishedTheses(Integer pageNumber, String pageSize, String query) {
+
+        if (!thesisRepository.existsPublishedTheses()) {
+            return Page.empty();
+        }
+
+        Pageable pageable = PageRequest.of(pageNumber, Integer.parseInt(pageSize));
+
+        return thesisRepository.customFindPublishedTheses(pageable, query);
     }
 }

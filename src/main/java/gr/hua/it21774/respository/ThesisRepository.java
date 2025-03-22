@@ -72,7 +72,9 @@ public interface ThesisRepository extends JpaRepository<Thesis, Long> {
                         "stu.firstName, " +
                         "stu.lastName, " +
                         "ts.status, " +
-                        "t.publishedAt) " +
+                        "t.publishedAt, " +
+                        "t.fileName, " +
+                        "t.fileSize) " +
                         "FROM Thesis t " +
                         "JOIN User prof ON prof.id = t.professorId " +
                         "JOIN User rev1 ON rev1.id = t.secondReviewerId " +
@@ -172,7 +174,9 @@ public interface ThesisRepository extends JpaRepository<Thesis, Long> {
                         "stu.firstName, " +
                         "stu.lastName, " +
                         "ts.status, " +
-                        "t.publishedAt) " +
+                        "t.publishedAt, " +
+                        "t.fileName, " +
+                        "t.fileSize) " +
                         "FROM Thesis t " +
                         "JOIN User prof ON prof.id = t.professorId " +
                         "JOIN User rev1 ON rev1.id = t.secondReviewerId " +
@@ -197,6 +201,11 @@ public interface ThesisRepository extends JpaRepository<Thesis, Long> {
         @Modifying
         @Query("UPDATE Thesis t SET t.statusId = :statusId, t.studentId = :studentId, t.lastModified = :lastModified WHERE t.id = :thesisId")
         void updateThesisStatus(Long thesisId, Long studentId, Long statusId, Instant lastModified);
+
+        @Transactional
+        @Modifying
+        @Query("UPDATE Thesis t SET t.statusId = :statusId, t.studentId = :studentId, t.lastModified = :lastModified, t.startedAt = :lastModified WHERE t.id = :thesisId")
+        void assignStudent(Long thesisId, Long studentId, Long statusId, Instant lastModified);
 
         @Transactional
         @Modifying
@@ -234,7 +243,7 @@ public interface ThesisRepository extends JpaRepository<Thesis, Long> {
 
         @Transactional
         @Modifying
-        @Query("UPDATE Thesis t SET t.statusId = :statusId, t.fileName = :fileName, t.fileSize = :fileSize, t.lastModified = :lastModified WHERE t.id = :thesisId")
+        @Query("UPDATE Thesis t SET t.statusId = :statusId, t.fileName = :fileName, t.fileSize = :fileSize, t.lastModified = :lastModified, t.publishedAt = :lastModified WHERE t.id = :thesisId")
         void publishThesis(Long thesisId, Long statusId, String fileName, Long fileSize, Instant lastModified);
 
         @Query("SELECT new gr.hua.it21774.dto.DetailedThesisDTO(" +
@@ -257,7 +266,9 @@ public interface ThesisRepository extends JpaRepository<Thesis, Long> {
                         "s.firstName, " +
                         "s.lastName, " +
                         "ts.status, " +
-                        "t.publishedAt) " +
+                        "t.publishedAt, " +
+                        "t.fileName, " +
+                        "t.fileSize) " +
                         "FROM Thesis t " +
                         "JOIN User u ON u.id = t.professorId " +
                         "JOIN User r1 ON r1.id = t.secondReviewerId " +
@@ -266,10 +277,15 @@ public interface ThesisRepository extends JpaRepository<Thesis, Long> {
                         "JOIN ThesisStatus ts ON ts.id = t.statusId " +
                         "WHERE ts.status = 'PUBLISHED' " +
                         "AND (:query IS NULL OR " +
-                        "      LOWER(t.title) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
-                        "      LOWER(CONCAT(s.firstName, ' ', s.lastName)) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
-                        "      LOWER(CONCAT(u.firstName, ' ', u.lastName)) LIKE LOWER(CONCAT('%', :query, '%'))) " +
+                        "LOWER(t.title) LIKE CONCAT('%', LOWER(:query), '%') OR " +
+                        "LOWER(CONCAT(s.firstName, ' ', s.lastName)) LIKE CONCAT('%', LOWER(:query), '%') OR " +
+                        "LOWER(CONCAT(u.firstName, ' ', u.lastName)) LIKE CONCAT('%', LOWER(:query), '%'))" +
                         "ORDER BY t.publishedAt DESC")
         Page<DetailedThesisDTO> customFindPublishedTheses(Pageable pageable, String query);
+
+        @Query("SELECT COUNT(t) > 0 FROM Thesis t " +
+                        "JOIN ThesisStatus ts ON ts.id = t.statusId " +
+                        "WHERE ts.status = 'PUBLISHED'")
+        Boolean existsPublishedTheses();
 
 }
