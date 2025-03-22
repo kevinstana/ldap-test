@@ -250,7 +250,7 @@ public interface ThesisRepository extends JpaRepository<Thesis, Long> {
                         "r2.id, " +
                         "r2.firstName, " +
                         "r2.lastName, " +
-                        "t.thirdReviewerGrade, " +
+                        "t.third[ReviewerGrade, " +
                         "s.id, " +
                         "s.firstName, " +
                         "s.lastName, " +
