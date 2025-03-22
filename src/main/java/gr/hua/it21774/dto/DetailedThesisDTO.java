@@ -1,5 +1,7 @@
 package gr.hua.it21774.dto;
 
+import java.time.Instant;
+
 import gr.hua.it21774.enums.EThesisStatus;
 
 public class DetailedThesisDTO {
@@ -28,6 +30,7 @@ public class DetailedThesisDTO {
     private String studentLastName;
 
     private EThesisStatus status;
+    private Instant publishedAt;
 
     public DetailedThesisDTO() {
     }
@@ -37,7 +40,7 @@ public class DetailedThesisDTO {
             Long reviewer1Id, String reviewer1FirstName, String reviewer1LastName, Double reviewer1Grade,
             Long reviewer2Id, String reviewer2FirstName, String reviewer2LastName, Double reviewer2Grade,
             Long studentId, String studentFirstName, String studentLastName,
-            EThesisStatus status) {
+            EThesisStatus status, Instant publishedAt) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -57,6 +60,7 @@ public class DetailedThesisDTO {
         this.studentFirstName = studentFirstName != null ? studentFirstName : null;
         this.studentLastName = studentLastName != null ? studentLastName : null;
         this.status = status;
+        this.publishedAt = publishedAt;
     }
 
     public Double getProfessorGrade() {
@@ -209,5 +213,13 @@ public class DetailedThesisDTO {
 
     public void setStatus(EThesisStatus status) {
         this.status = status;
+    }
+
+    public Instant getPublishedAt() {
+        return publishedAt;
+    }
+
+    public void setPublishedAt(Instant publishedAt) {
+        this.publishedAt = publishedAt;
     }
 }

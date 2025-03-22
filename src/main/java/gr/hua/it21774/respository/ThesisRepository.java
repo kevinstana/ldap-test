@@ -71,7 +71,8 @@ public interface ThesisRepository extends JpaRepository<Thesis, Long> {
                         "stu.id, " +
                         "stu.firstName, " +
                         "stu.lastName, " +
-                        "ts.status) " +
+                        "ts.status, " +
+                        "ts.publishedAt) " +
                         "FROM Thesis t " +
                         "JOIN User prof ON prof.id = t.professorId " +
                         "JOIN User rev1 ON rev1.id = t.secondReviewerId " +
@@ -170,7 +171,8 @@ public interface ThesisRepository extends JpaRepository<Thesis, Long> {
                         "stu.id, " +
                         "stu.firstName, " +
                         "stu.lastName, " +
-                        "ts.status) " +
+                        "ts.status, " +
+                        "ts.publishedAt) " +
                         "FROM Thesis t " +
                         "JOIN User prof ON prof.id = t.professorId " +
                         "JOIN User rev1 ON rev1.id = t.secondReviewerId " +
@@ -254,7 +256,8 @@ public interface ThesisRepository extends JpaRepository<Thesis, Long> {
                         "s.id, " +
                         "s.firstName, " +
                         "s.lastName, " +
-                        "ts.status) " +
+                        "ts.status, " +
+                        "ts.publishedAt) " +
                         "FROM Thesis t " +
                         "JOIN User u ON u.id = t.professorId " +
                         "JOIN User r1 ON r1.id = t.secondReviewerId " +
