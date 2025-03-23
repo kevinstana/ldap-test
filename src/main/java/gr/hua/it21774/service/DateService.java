@@ -54,8 +54,10 @@ public class DateService {
 
     public AssignmentDates getAssignmentDates() {
         List<AssignmentDates> dates = assignmentDatesRepository.findAll();
-        if (dates.size() <= 1) {
+        if (dates.size() == 1) {
             return dates.get(0);
+        } else if (dates.size() == 0) {
+            return new AssignmentDates();
         }
 
         throw new GenericException(HttpStatus.BAD_REQUEST, "Something went wrong");
@@ -65,6 +67,8 @@ public class DateService {
         List<ReviewingDates> dates = reviewingDatesRepository.findAll();
         if (dates.size() <= 1) {
             return dates.get(0);
+        } else if (dates.size() == 0) {
+            return new ReviewingDates();
         }
 
         throw new GenericException(HttpStatus.BAD_REQUEST, "Something went wrong");

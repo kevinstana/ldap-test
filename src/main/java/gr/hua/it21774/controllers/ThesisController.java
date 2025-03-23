@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gr.hua.it21774.dto.DetailedThesisDTO;
 import gr.hua.it21774.dto.ThesisDTO;
+import gr.hua.it21774.entities.AssignmentDates;
 import gr.hua.it21774.entities.Course;
 import gr.hua.it21774.enums.ERole;
 import gr.hua.it21774.enums.EThesisStatus;
@@ -39,6 +41,7 @@ import gr.hua.it21774.responses.SignedUrlResponse;
 import gr.hua.it21774.respository.ThesisRepository;
 import gr.hua.it21774.respository.UserRepository;
 import gr.hua.it21774.service.CourseService;
+import gr.hua.it21774.service.DateService;
 import gr.hua.it21774.service.MinioService;
 import gr.hua.it21774.service.ThesisService;
 import io.jsonwebtoken.Claims;
@@ -52,15 +55,17 @@ public class ThesisController {
     private final UserRepository userRepository;
     private final ThesisRepository thesisRepository;
     private final MinioService minioService;
+    private final DateService dateService;
 
     public ThesisController(ThesisService thesisService,
             CourseService courseService, UserRepository userRepository, ThesisRepository thesisRepository,
-            MinioService minioService) {
+            MinioService minioService, DateService dateService) {
         this.thesisService = thesisService;
         this.courseService = courseService;
         this.userRepository = userRepository;
         this.thesisRepository = thesisRepository;
         this.minioService = minioService;
+        this.dateService = dateService;
     }
 
     @PostMapping("/theses")
@@ -186,6 +191,17 @@ public class ThesisController {
     @PutMapping("/theses/{id}/assign-student")
     public ResponseEntity<?> assignStudent(@PathVariable Long id, @Valid @RequestBody AssignStudentRequest request)
             throws Exception {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication.getAuthorities().stream()
+                .anyMatch(auth -> "PROFESSOR".equals(auth.getAuthority()))) {
+                    AssignmentDates dates = dateService.getAssignmentDates();
+                    Instant now = Instant.now();
+                    if ((dates.getFrom() == null || dates.getTo() == null) || (!now.isAfter(dates.getFrom()) || !now.isBefore(dates.getTo()))) {
+                        throw new GenericException(HttpStatus.BAD_REQUEST, "Assignment period not active");
+                    }
+                }
 
         boolean isStudent = userRepository.hasRole(request.getStudentId(), ERole.STUDENT);
 
