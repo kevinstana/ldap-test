@@ -48,6 +48,7 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/it21774
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=password
+      - MINIO_URL=http://host.docker.internal:9000
     networks:
       - demo_network
   front:
