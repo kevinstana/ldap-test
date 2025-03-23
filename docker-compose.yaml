@@ -28,8 +28,6 @@ services:
     ports:
       - "9000:9000"   # API port
       - "9001:9001"   # Browser Console port
-    extra_hosts:
-      - "minio:127.0.0.1"
     environment:
       MINIO_ROOT_USER: admin
       MINIO_ROOT_PASSWORD: password
