@@ -23,7 +23,7 @@ services:
     networks:
       - demo_network
   minio:
-    container_name: minio
+    # container_name: minio
     image: minio/minio:latest
     ports:
       - "9000:9000"   # API port
