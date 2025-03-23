@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import gr.hua.it21774.dto.DetailedThesisDTO;
 import gr.hua.it21774.dto.ThesisDTO;
+import gr.hua.it21774.entities.ReviewingDates;
 import gr.hua.it21774.entities.Thesis;
 import gr.hua.it21774.enums.ERole;
 import gr.hua.it21774.enums.EThesisRequestStatus;
@@ -51,12 +52,13 @@ public class ThesisService {
     private final MinioService minioService;
     private final TaskFilesRepository taskFilesRepository;
     private final TasksRepository tasksRepository;
+    private final DateService dateService;
 
     public ThesisService(ThesisRepository thesisRepository, ThesisRequestRepository thesisRequestRepository,
             ThesisRequestStatusRepository thesisRequestStatusRepository,
             UserRepository userRepository,
             CourseThesisRepository courseThesisRepository, MinioService minioService,
-            TaskFilesRepository taskFilesRepository, TasksRepository tasksRepository) {
+            TaskFilesRepository taskFilesRepository, TasksRepository tasksRepository, DateService dateService) {
         this.thesisRepository = thesisRepository;
         this.thesisRequestRepository = thesisRequestRepository;
         this.thesisRequestStatusRepository = thesisRequestStatusRepository;
@@ -65,6 +67,7 @@ public class ThesisService {
         this.minioService = minioService;
         this.taskFilesRepository = taskFilesRepository;
         this.tasksRepository = tasksRepository;
+        this.dateService = dateService;
     }
 
     @Transactional
@@ -344,10 +347,24 @@ public class ThesisService {
     }
 
     public void changeThesisStatus(Long thesisId, EThesisStatus status) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Long statusId = thesisRepository.findIdByStatus(status).get();
+        DetailedThesisDTO thesis = thesisRepository.findThesis(thesisId);
+
+        boolean isProfessor = authentication.getAuthorities().stream()
+                .anyMatch(auth -> "PROFESSOR".equals(auth.getAuthority()));
+
+        if (isProfessor && status.equals(EThesisStatus.PENDING_REVIEW)
+                && !thesis.getStatus().equals(EThesisStatus.PENDING_REVIEW)) {
+            ReviewingDates dates = dateService.getReviewingDates();
+            Instant now = Instant.now();
+            if ((dates.getFrom() == null || dates.getTo() == null)
+                    || (now.isBefore(dates.getFrom()) || now.isAfter(dates.getTo()))) {
+                throw new GenericException(HttpStatus.BAD_REQUEST, "Reviewing period not active");
+            }
+        }
 
         if (status.equals(EThesisStatus.REVIEWED)) {
-            DetailedThesisDTO thesis = thesisRepository.findThesis(thesisId);
             if (thesis.getProfessorGrade() == null || thesis.getReviewer1Grade() == null
                     || thesis.getReviewer2Grade() == null) {
                 throw new GenericException(HttpStatus.BAD_REQUEST, "Not graded by all reviewers");
