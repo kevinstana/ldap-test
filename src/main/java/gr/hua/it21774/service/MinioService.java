@@ -59,13 +59,18 @@ public class MinioService {
     }
 
     public String getSignedUrl(String bucketName, String folderName, String fileName) throws Exception {
-        return minioClient.getPresignedObjectUrl(
+        String signedUrl = minioClient.getPresignedObjectUrl(
                 GetPresignedObjectUrlArgs.builder()
                         .method(Method.GET)
                         .bucket(bucketName)
                         .object("/" + folderName + "/" + fileName)
                         .expiry(60, TimeUnit.SECONDS)
                         .build());
+
+        signedUrl = signedUrl.replace("minio:9000", "localhost:9000");
+
+        return signedUrl;
+
     }
 
     public void uploadMultipleFiles(List<MultipartFile> files, String bucketName, String folderName) throws Exception {
