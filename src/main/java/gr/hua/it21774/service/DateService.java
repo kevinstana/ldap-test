@@ -65,7 +65,7 @@ public class DateService {
 
     public ReviewingDates getReviewingDates() {
         List<ReviewingDates> dates = reviewingDatesRepository.findAll();
-        if (dates.size() <= 1) {
+        if (dates.size() == 1) {
             return dates.get(0);
         } else if (dates.size() == 0) {
             return new ReviewingDates();
