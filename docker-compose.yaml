@@ -19,15 +19,15 @@ services:
       retries: 2
     volumes:
       - './assets/db:/docker-entrypoint-initdb.d'
-      - 'pgdata14:/var/lib/postgresql/data'
+      - 'thesis:/var/lib/postgresql/data'
     networks:
-      - demo_network
+      - thesis_network
   minio:
     container_name: minio
     image: minio/minio:latest
     ports:
-      - "9000:9000"   # API port
-      - "9001:9001"   # Browser Console port
+      - "9000:9000"
+      - "9001:9001"
     environment:
       MINIO_ROOT_USER: admin
       MINIO_ROOT_PASSWORD: password
@@ -35,11 +35,11 @@ services:
     volumes:
       - minio-data:/data
     networks:
-      demo_network:
+      thesis_network:
         ipv4_address: 172.28.0.10 
   spring:
     container_name: spring
-    image: "ghcr.io/kevinstana/ldap-spring"
+    image: "ghcr.io/kevinstana/thesis-api"
     ports:
       - "8080:9090"
     depends_on:
@@ -50,10 +50,10 @@ services:
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=password
     networks:
-      - demo_network
+      - thesis_network
   front:
     container_name: front
-    image: "ghcr.io/kevinstana/next"
+    image: "ghcr.io/kevinstana/thesis-next"
     environment:
       - AUTH_SECRET=348412897bfab5dfbd754c94dfdc4be45909f44db07c74494d75d514bd91f935
       - AUTH_TRUST_HOST=true
@@ -62,16 +62,16 @@ services:
     ports:
         - 3000:3000
     networks:
-      - demo_network
+      - thesis_network
 
 volumes:
-    pgdata14:
+    thesis:
     minio-data:
 
 networks:
-  demo_network:
+  thesis_network:
     external: false
-    name: demo_network
+    name: thesis_network
     ipam:
       driver: default
       config:
