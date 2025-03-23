@@ -63,7 +63,7 @@ public class MinioService {
                 GetPresignedObjectUrlArgs.builder()
                         .method(Method.GET)
                         .bucket(bucketName)
-                        .object("/" + folderName + "/" + fileName)
+                        .object(folderName + "/" + fileName)
                         .expiry(60, TimeUnit.SECONDS)
                         .build());
     }
