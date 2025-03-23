@@ -68,6 +68,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/assignment-dates").hasAuthority("SECRETARY")
                         .requestMatchers(HttpMethod.POST, "/reviewing-dates").hasAuthority("SECRETARY")
                         .requestMatchers(HttpMethod.GET, "/reviewing-dates").hasAuthority("SECRETARY")
+                        .requestMatchers(HttpMethod.GET, "/external-users/{username}").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/users").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/users").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/external-users").hasAuthority("ADMIN")

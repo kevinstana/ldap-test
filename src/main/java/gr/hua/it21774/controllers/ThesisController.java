@@ -124,7 +124,11 @@ public class ThesisController {
 
     @GetMapping("/theses/me")
     public ResponseEntity<?> getMyTheses(@RequestParam(required = false) String page,
-            @RequestParam(required = false) String size) {
+            @RequestParam(required = false) String size, @RequestParam(required = false) String query) {
+
+        if (query != null) {
+            query = URLDecoder.decode(query, StandardCharsets.UTF_8);
+        }
 
         List<String> validSizeValues = Arrays.asList("5", "10", "15", "20", "ALL");
 
@@ -142,7 +146,7 @@ public class ThesisController {
             size = "15";
         }
 
-        Page<ThesisDTO> theses = thesisService.getMyPagedTheses(intPage, size);
+        Page<ThesisDTO> theses = thesisService.getMyPagedTheses(intPage, size, query);
 
         return ResponseEntity.ok().body(theses);
     }
@@ -196,12 +200,13 @@ public class ThesisController {
 
         if (authentication.getAuthorities().stream()
                 .anyMatch(auth -> "PROFESSOR".equals(auth.getAuthority()))) {
-                    AssignmentDates dates = dateService.getAssignmentDates();
-                    Instant now = Instant.now();
-                    if ((dates.getFrom() == null || dates.getTo() == null) || (!now.isAfter(dates.getFrom()) || !now.isBefore(dates.getTo()))) {
-                        throw new GenericException(HttpStatus.BAD_REQUEST, "Assignment period not active");
-                    }
-                }
+            AssignmentDates dates = dateService.getAssignmentDates();
+            Instant now = Instant.now();
+            if ((dates.getFrom() == null || dates.getTo() == null)
+                    || (!now.isAfter(dates.getFrom()) || !now.isBefore(dates.getTo()))) {
+                throw new GenericException(HttpStatus.BAD_REQUEST, "Assignment period not active");
+            }
+        }
 
         boolean isStudent = userRepository.hasRole(request.getStudentId(), ERole.STUDENT);
 
@@ -280,7 +285,11 @@ public class ThesisController {
 
     @GetMapping("/theses/assigned-reviews")
     public ResponseEntity<?> getMyAssignedReviews(@RequestParam(required = false) String page,
-            @RequestParam(required = false) String size) {
+            @RequestParam(required = false) String size, @RequestParam(required = false) String query) {
+
+        if (query != null) {
+            query = URLDecoder.decode(query, StandardCharsets.UTF_8);
+        }
 
         List<String> validSizeValues = Arrays.asList("5", "10", "15", "20", "ALL");
 
@@ -298,7 +307,7 @@ public class ThesisController {
             size = "15";
         }
 
-        Page<ThesisDTO> theses = thesisService.getMyAssignedReviews(intPage, size);
+        Page<ThesisDTO> theses = thesisService.getMyAssignedReviews(intPage, size, query);
 
         return ResponseEntity.ok().body(theses);
     }

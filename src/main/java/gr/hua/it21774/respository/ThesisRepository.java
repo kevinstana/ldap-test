@@ -95,8 +95,9 @@ public interface ThesisRepository extends JpaRepository<Thesis, Long> {
                         "JOIN User u ON u.id = t.professorId " +
                         "JOIN ThesisStatus ts ON ts.id = t.statusId " +
                         "WHERE (:id IS NULL OR t.professorId = :id) " +
+                        "AND (:query IS NULL OR LOWER(t.title) LIKE LOWER(CONCAT('%', :query, '%'))) " +
                         "ORDER BY t.id ASC")
-        Page<ThesisDTO> customFindAllByTeacherId(Pageable pageable, Long id);
+        Page<ThesisDTO> customFindAllByTeacherId(Pageable pageable, Long id, String query);
 
         @Modifying
         @Query("DELETE FROM CourseTheses c WHERE c.thesisId = :thesisId")
@@ -222,9 +223,10 @@ public interface ThesisRepository extends JpaRepository<Thesis, Long> {
                         "FROM Thesis t " +
                         "JOIN User u ON u.id = t.professorId " +
                         "JOIN ThesisStatus ts ON ts.id = t.statusId " +
-                        "WHERE t.secondReviewerId = :reviewerId OR t.thirdReviewerId = :reviewerId " +
+                        "WHERE (t.secondReviewerId = :reviewerId OR t.thirdReviewerId = :reviewerId) " +
+                        "AND (:query IS NULL OR LOWER(t.title) LIKE LOWER(CONCAT('%', :query, '%'))) " +
                         "ORDER BY t.id ASC")
-        Page<ThesisDTO> getMyAssignedReviews(Pageable pageable, Long reviewerId);
+        Page<ThesisDTO> getMyAssignedReviews(Pageable pageable, Long reviewerId, String query);
 
         @Transactional
         @Modifying

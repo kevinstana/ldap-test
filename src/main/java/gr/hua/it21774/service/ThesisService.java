@@ -144,7 +144,7 @@ public class ThesisService {
         return thesisRepository.findThesis(id);
     }
 
-    public Page<ThesisDTO> getMyPagedTheses(Integer pageNumber, String pageSize) {
+    public Page<ThesisDTO> getMyPagedTheses(Integer pageNumber, String pageSize, String query) {
         Pageable pageable;
 
         if (pageSize.equals("ALL")) {
@@ -157,10 +157,10 @@ public class ThesisService {
         Claims accessTokenClaims = (Claims) authentication.getDetails();
         Long professorId = Long.parseLong(accessTokenClaims.getSubject());
 
-        return thesisRepository.customFindAllByTeacherId(pageable, professorId);
+        return thesisRepository.customFindAllByTeacherId(pageable, professorId, query);
     }
 
-    public Page<ThesisDTO> getMyAssignedReviews(Integer pageNumber, String pageSize) {
+    public Page<ThesisDTO> getMyAssignedReviews(Integer pageNumber, String pageSize, String query) {
         Pageable pageable;
 
         if (pageSize.equals("ALL")) {
@@ -173,7 +173,7 @@ public class ThesisService {
         Claims accessTokenClaims = (Claims) authentication.getDetails();
         Long reviewerId = Long.parseLong(accessTokenClaims.getSubject());
 
-        return thesisRepository.getMyAssignedReviews(pageable, reviewerId);
+        return thesisRepository.getMyAssignedReviews(pageable, reviewerId, query);
     }
 
     @Transactional
