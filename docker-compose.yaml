@@ -37,7 +37,8 @@ services:
     volumes:
       - minio-data:/data
     networks:
-      - demo_network
+      demo_network:
+        ipv4_address: 172.28.0.10 
   spring:
     container_name: spring
     image: "ghcr.io/kevinstana/ldap-spring"
