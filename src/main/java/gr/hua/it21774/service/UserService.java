@@ -30,7 +30,7 @@ public class UserService {
         this.roleRepository = roleRepository;
     }
 
-    public Page<CommonUserDTO> getPagedUsers(Integer pageNumber, String pageSize, List<ERole> roles, Boolean enabled) {
+    public Page<CommonUserDTO> getPagedUsers(Integer pageNumber, String pageSize, List<ERole> roles, Boolean enabled, String query) {
         Pageable pageable;
 
         if (pageSize.equals("ALL")) {
@@ -39,11 +39,11 @@ public class UserService {
             pageable = PageRequest.of(pageNumber, Integer.parseInt(pageSize));
         }
 
-        return userRepository.customFindAll(pageable, roles, enabled);
+        return userRepository.customFindAll(pageable, roles, enabled, query);
     }
 
     public Page<CommonUserDTO> getPagedHuaUsers(Integer pageNumber, String pageSize, List<ERole> roles,
-            Boolean enabled) {
+            Boolean enabled, String query) {
         Pageable pageable;
 
         if (pageSize.equals("ALL")) {
@@ -52,7 +52,7 @@ public class UserService {
             pageable = PageRequest.of(pageNumber, Integer.parseInt(pageSize));
         }
 
-        return userRepository.customFindAllHua(pageable, roles, enabled);
+        return userRepository.customFindAllHua(pageable, roles, enabled, query);
     }
 
     @Transactional

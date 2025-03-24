@@ -1,5 +1,7 @@
 package gr.hua.it21774.controllers;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -34,7 +36,13 @@ public class ExternalUserController {
     public ResponseEntity<?> getAllExternalUsers(@RequestParam(required = false) String page,
             @RequestParam(required = false) String size,
             @RequestParam(required = false) List<String> roles,
-            @RequestParam(required = false) Boolean enabled) {
+            @RequestParam(required = false) Boolean enabled, @RequestParam(required = false) String query) {
+
+        if (query != null) {
+            query = URLDecoder.decode(query, StandardCharsets.UTF_8);
+        } else {
+            query = "";
+        }
 
         List<String> validSizeValues = Arrays.asList("5", "10", "15", "20", "ALL");
 
@@ -65,7 +73,8 @@ public class ExternalUserController {
 
         List<ERole> rolesToQuery = validRoles.isEmpty() ? null : validRoles;
 
-        Page<CommonUserDTO> externalUsers = externalUserService.getPagedUsers(intPage, size, rolesToQuery, enabled);
+        Page<CommonUserDTO> externalUsers = externalUserService.getPagedUsers(intPage, size, rolesToQuery, enabled,
+                query);
 
         return ResponseEntity.ok().body(externalUsers);
     }

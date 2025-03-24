@@ -49,6 +49,7 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/it21774
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=password
+      - MINIO_URL=http://172.28.0.10:9000
     networks:
       - thesis_network
   front:

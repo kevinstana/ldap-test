@@ -124,7 +124,7 @@ public class ThesisController {
 
     @GetMapping("/theses/me")
     public ResponseEntity<?> getMyTheses(@RequestParam(required = false) String page,
-            @RequestParam(required = false) String size, @RequestParam(required = false) String query) {
+            @RequestParam(required = false) String size, @RequestParam(required = false) String query, @RequestParam(required = false) List<String> statuses) {
 
         if (query != null) {
             query = URLDecoder.decode(query, StandardCharsets.UTF_8);
@@ -146,7 +146,20 @@ public class ThesisController {
             size = "15";
         }
 
-        Page<ThesisDTO> theses = thesisService.getMyPagedTheses(intPage, size, query);
+        List<EThesisStatus> validStatuses = new ArrayList<>();
+
+        if (statuses != null) {
+            for (String role : statuses) {
+                try {
+                    validStatuses.add(EThesisStatus.valueOf(role.toUpperCase()));
+                } catch (IllegalArgumentException e) {
+                }
+            }
+        }
+
+        List<EThesisStatus> statusesToQuery = validStatuses.isEmpty() ? null : validStatuses;
+
+        Page<ThesisDTO> theses = thesisService.getMyPagedTheses(intPage, size, query, statusesToQuery);
 
         return ResponseEntity.ok().body(theses);
     }
@@ -285,7 +298,7 @@ public class ThesisController {
 
     @GetMapping("/theses/assigned-reviews")
     public ResponseEntity<?> getMyAssignedReviews(@RequestParam(required = false) String page,
-            @RequestParam(required = false) String size, @RequestParam(required = false) String query) {
+            @RequestParam(required = false) String size, @RequestParam(required = false) List<String> statuses, @RequestParam(required = false) String query) {
 
         if (query != null) {
             query = URLDecoder.decode(query, StandardCharsets.UTF_8);
@@ -307,7 +320,20 @@ public class ThesisController {
             size = "15";
         }
 
-        Page<ThesisDTO> theses = thesisService.getMyAssignedReviews(intPage, size, query);
+        List<EThesisStatus> validStatuses = new ArrayList<>();
+
+        if (statuses != null) {
+            for (String role : statuses) {
+                try {
+                    validStatuses.add(EThesisStatus.valueOf(role.toUpperCase()));
+                } catch (IllegalArgumentException e) {
+                }
+            }
+        }
+
+        List<EThesisStatus> statusesToQuery = validStatuses.isEmpty() ? null : validStatuses;
+
+        Page<ThesisDTO> theses = thesisService.getMyAssignedReviews(intPage, size, query, statusesToQuery);
 
         return ResponseEntity.ok().body(theses);
     }

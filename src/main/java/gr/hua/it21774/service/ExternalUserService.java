@@ -93,7 +93,7 @@ public class ExternalUserService {
         externalUserRepository.updatePasswordByUsername(username, passwordEncoder.encode(requestNewPassword));
     }
 
-    public Page<CommonUserDTO> getPagedUsers(Integer pageNumber, String pageSize, List<ERole> roles, Boolean enabled) {
+    public Page<CommonUserDTO> getPagedUsers(Integer pageNumber, String pageSize, List<ERole> roles, Boolean enabled, String query) {
         Pageable pageable;
 
         if (pageSize.equals("ALL")) {
@@ -102,7 +102,7 @@ public class ExternalUserService {
             pageable = PageRequest.of(pageNumber, Integer.parseInt(pageSize));
         }
 
-        return externalUserRepository.customFindAll(pageable, roles, enabled);
+        return externalUserRepository.customFindAll(pageable, roles, enabled, query);
     }
 
     public CommonUserDTO getExternalUserProfile(String username) {

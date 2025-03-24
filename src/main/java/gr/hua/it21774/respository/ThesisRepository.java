@@ -96,8 +96,19 @@ public interface ThesisRepository extends JpaRepository<Thesis, Long> {
                         "JOIN ThesisStatus ts ON ts.id = t.statusId " +
                         "WHERE (:id IS NULL OR t.professorId = :id) " +
                         "AND (:query IS NULL OR LOWER(t.title) LIKE LOWER(CONCAT('%', :query, '%'))) " +
-                        "ORDER BY t.id ASC")
-        Page<ThesisDTO> customFindAllByTeacherId(Pageable pageable, Long id, String query);
+                        "AND (:statuses IS NULL OR ts.status IN :statuses) " +
+                        "ORDER BY " +
+                        "         CASE " +
+                        "            WHEN ts.status = 'AVAILABLE' THEN 1 " +
+                        "            WHEN ts.status = 'IN_PROGRESS' THEN 2 " +
+                        "            WHEN ts.status = 'PENDING_REVIEW' THEN 3 " +
+                        "            WHEN ts.status = 'REVIEWED' THEN 4 " +
+                        "            ELSE 6 " +
+                        "         END, " +
+                        "         CASE WHEN ts.status = 'AVAILABLE' THEN t.createdAt END DESC, " +
+                        "         t.createdAt DESC")
+        Page<ThesisDTO> customFindAllByTeacherId(Pageable pageable, Long id, String query,
+                        List<EThesisStatus> statuses);
 
         @Modifying
         @Query("DELETE FROM CourseTheses c WHERE c.thesisId = :thesisId")
@@ -224,9 +235,21 @@ public interface ThesisRepository extends JpaRepository<Thesis, Long> {
                         "JOIN User u ON u.id = t.professorId " +
                         "JOIN ThesisStatus ts ON ts.id = t.statusId " +
                         "WHERE (t.secondReviewerId = :reviewerId OR t.thirdReviewerId = :reviewerId) " +
-                        "AND (:query IS NULL OR LOWER(t.title) LIKE LOWER(CONCAT('%', :query, '%'))) " +
-                        "ORDER BY t.id ASC")
-        Page<ThesisDTO> getMyAssignedReviews(Pageable pageable, Long reviewerId, String query);
+                        "AND (:query IS NULL OR LOWER(t.title) LIKE LOWER(CONCAT('%', :query, '%')) " +
+                        "OR LOWER(CONCAT(u.firstName, ' ', u.lastName)) LIKE LOWER(CONCAT('%', :query, '%'))) " +
+                        "AND (:statuses IS NULL OR ts.status IN :statuses) " +
+                        "ORDER BY " +
+                        "         CASE " +
+                        "            WHEN ts.status = 'AVAILABLE' THEN 1 " +
+                        "            WHEN ts.status = 'IN_PROGRESS' THEN 2 " +
+                        "            WHEN ts.status = 'PENDING_REVIEW' THEN 3 " +
+                        "            WHEN ts.status = 'REVIEWED' THEN 4 " +
+                        "            ELSE 6 " +
+                        "         END, " +
+                        "         CASE WHEN ts.status = 'AVAILABLE' THEN t.createdAt END DESC, " +
+                        "         t.createdAt DESC")
+        Page<ThesisDTO> getMyAssignedReviews(Pageable pageable, Long reviewerId, String query,
+                        List<EThesisStatus> statuses);
 
         @Transactional
         @Modifying
@@ -279,9 +302,9 @@ public interface ThesisRepository extends JpaRepository<Thesis, Long> {
                         "JOIN ThesisStatus ts ON ts.id = t.statusId " +
                         "WHERE ts.status = 'PUBLISHED' " +
                         "AND (:query IS NULL OR " +
-                        "LOWER(t.title) LIKE CONCAT('%', LOWER(:query), '%') OR " +
-                        "LOWER(CONCAT(s.firstName, ' ', s.lastName)) LIKE CONCAT('%', LOWER(:query), '%') OR " +
-                        "LOWER(CONCAT(u.firstName, ' ', u.lastName)) LIKE CONCAT('%', LOWER(:query), '%'))" +
+                        "LOWER(t.title) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+                        "LOWER(CONCAT(s.firstName, ' ', s.lastName)) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+                        "LOWER(CONCAT(u.firstName, ' ', u.lastName)) LIKE LOWER(CONCAT('%', :query, '%'))) " +
                         "ORDER BY t.publishedAt DESC")
         Page<DetailedThesisDTO> customFindPublishedTheses(Pageable pageable, String query);
 

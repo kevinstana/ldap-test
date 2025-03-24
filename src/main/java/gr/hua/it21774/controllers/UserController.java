@@ -35,7 +35,14 @@ public class UserController {
     public ResponseEntity<?> getAllUsers(@RequestParam(required = false) String page,
             @RequestParam(required = false) String size,
             @RequestParam(required = false) List<String> roles,
-            @RequestParam(required = false) Boolean enabled) {
+            @RequestParam(required = false) Boolean enabled,
+            @RequestParam(required = false) String query) {
+
+        if (query != null) {
+            query = URLDecoder.decode(query, StandardCharsets.UTF_8);
+        } else {
+            query = "";
+        }
 
         List<String> validSizeValues = Arrays.asList("5", "10", "15", "20", "ALL");
 
@@ -65,7 +72,7 @@ public class UserController {
         }
 
         List<ERole> rolesToQuery = validRoles.isEmpty() ? null : validRoles;
-        Page<CommonUserDTO> users = userService.getPagedUsers(intPage, size, rolesToQuery, enabled);
+        Page<CommonUserDTO> users = userService.getPagedUsers(intPage, size, rolesToQuery, enabled, query);
 
         return ResponseEntity.ok().body(users);
     }
@@ -74,7 +81,14 @@ public class UserController {
     public ResponseEntity<?> getAllHuaUsers(@RequestParam(required = false) String page,
             @RequestParam(required = false) String size,
             @RequestParam(required = false) List<String> roles,
-            @RequestParam(required = false) Boolean enabled) {
+            @RequestParam(required = false) Boolean enabled,
+            @RequestParam(required = false) String query) {
+
+        if (query != null) {
+            query = URLDecoder.decode(query, StandardCharsets.UTF_8);
+        } else {
+            query = "";
+        }
 
         List<String> validSizeValues = Arrays.asList("5", "10", "15", "20", "ALL");
 
@@ -105,7 +119,7 @@ public class UserController {
 
         List<ERole> rolesToQuery = validRoles.isEmpty() ? null : validRoles;
 
-        Page<CommonUserDTO> users = userService.getPagedHuaUsers(intPage, size, rolesToQuery, enabled);
+        Page<CommonUserDTO> users = userService.getPagedHuaUsers(intPage, size, rolesToQuery, enabled, query);
 
         return ResponseEntity.ok().body(users);
     }
