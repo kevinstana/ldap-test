@@ -300,12 +300,17 @@ public interface ThesisRepository extends JpaRepository<Thesis, Long> {
                         "JOIN User r2 ON r2.id = t.thirdReviewerId " +
                         "JOIN User s ON s.id = t.studentId " +
                         "JOIN ThesisStatus ts ON ts.id = t.statusId " +
-                        "WHERE ts.status = 'PUBLISHED' " +
-                        "AND (:query IS NULL OR " +
-                        "LOWER(t.title) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
-                        "LOWER(CONCAT(s.firstName, ' ', s.lastName)) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
-                        "LOWER(CONCAT(u.firstName, ' ', u.lastName)) LIKE LOWER(CONCAT('%', :query, '%'))) " +
-                        "ORDER BY t.publishedAt DESC")
+                        "WHERE (:query IS NULL OR " +
+                        "      LOWER(t.title) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+                        "      LOWER(CONCAT(u.firstName, ' ', u.lastName)) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+                        "      LOWER(CONCAT(s.firstName, ' ', s.lastName)) LIKE LOWER(CONCAT('%', :query, '%'))) " +
+                        "AND ts.status = 'PUBLISHED' " +
+                        "ORDER BY " +
+                        "         CASE " +
+                        "            WHEN ts.status = 'PUBLISHED' THEN 1 " +
+                        "            ELSE 2 " +
+                        "         END, " +
+                        "         t.publishedAt DESC")
         Page<DetailedThesisDTO> customFindPublishedTheses(Pageable pageable, String query);
 
         @Query("SELECT COUNT(t) > 0 FROM Thesis t " +

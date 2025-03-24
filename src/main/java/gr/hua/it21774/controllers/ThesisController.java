@@ -124,7 +124,8 @@ public class ThesisController {
 
     @GetMapping("/theses/me")
     public ResponseEntity<?> getMyTheses(@RequestParam(required = false) String page,
-            @RequestParam(required = false) String size, @RequestParam(required = false) String query, @RequestParam(required = false) List<String> statuses) {
+            @RequestParam(required = false) String size, @RequestParam(required = false) String query,
+            @RequestParam(required = false) List<String> statuses) {
 
         if (query != null) {
             query = URLDecoder.decode(query, StandardCharsets.UTF_8);
@@ -298,7 +299,8 @@ public class ThesisController {
 
     @GetMapping("/theses/assigned-reviews")
     public ResponseEntity<?> getMyAssignedReviews(@RequestParam(required = false) String page,
-            @RequestParam(required = false) String size, @RequestParam(required = false) List<String> statuses, @RequestParam(required = false) String query) {
+            @RequestParam(required = false) String size, @RequestParam(required = false) List<String> statuses,
+            @RequestParam(required = false) String query) {
 
         if (query != null) {
             query = URLDecoder.decode(query, StandardCharsets.UTF_8);
@@ -358,6 +360,12 @@ public class ThesisController {
     @GetMapping("/theses/published")
     public ResponseEntity<?> getPublishedTheses(@RequestParam(required = false) String page,
             @RequestParam(required = false) String size, @RequestParam(required = false) String query) {
+
+        if (query != null) {
+            query = URLDecoder.decode(query, StandardCharsets.UTF_8);
+        } else {
+            query = "";
+        }
 
         List<String> validSizeValues = Arrays.asList("5", "10", "15", "20");
 
