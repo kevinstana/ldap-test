@@ -1,4 +1,4 @@
-Download the repo:
+Download the repo:  
 HTTPS:
 ```bash
 git clone https://github.com/kevinstana/thesis-next.git
