@@ -1,13 +1,24 @@
-Enable VPN
+
 
 ```bash
+cd thesis-api
 docker-compose up
 ```
 
-```bash
-curl -X POST http://localhost:8080/api/login -H "Content-Type: application/json" -d '{"username":"<hua username>","password":"<password>"}' | jq
-```
+If you get access denied, build the image of this repo
 
 ```bash
-curl http://localhost:8080/api/ -H "Authorization: Bearer <accessToken>"
+docker build -t ghcr.io/kevinstana/thesis-api:latest -f Dockerfile .
+```
+
+then download the repo [https://github.com/kevinstana/thesis-next](url) and:
+
+```bash
+cd thesis-next
+docker build -t ghcr.io/kevinstana/thesis-next:latest -f Dockerfile .
+```
+
+now go back to /thesis-api and run:
+```bash
+docker compose up
 ```
