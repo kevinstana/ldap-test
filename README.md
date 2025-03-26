@@ -1,5 +1,15 @@
+Download the repo:
+HTTPS:
+```bash
+git clone https://github.com/kevinstana/thesis-next.git
+```
 
+SSH:
+```bash
+git clone git@github.com:kevinstana/thesis-next.git
+```
 
+then
 ```bash
 cd thesis-api
 docker-compose up
